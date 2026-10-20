@@ -44,5 +44,4 @@ COPY --from=builder /out ./
 USER node
 EXPOSE 3000
 STOPSIGNAL SIGTERM
-ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "dist/main.js"]
