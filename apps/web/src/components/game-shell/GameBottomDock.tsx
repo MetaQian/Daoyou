@@ -23,16 +23,18 @@ function DockLink({
     <Link
       href={href}
       className={cn(
-        'hover:text-crimson inline-flex px-1 py-1.5 leading-5 whitespace-nowrap transition',
-        active ? 'text-crimson' : 'text-ink',
+        'inline-flex shrink-0 rounded-[2px] border px-3 py-1.5 leading-5 whitespace-nowrap no-underline transition-colors duration-150',
+        active
+          ? 'border-crimson bg-crimson text-paper'
+          : 'border-ink/30 bg-paper-2/70 text-ink hover:border-crimson/50 hover:text-crimson',
       )}
     >
       <span className="relative inline-flex items-center">
-        [{label}]
+        {label}
         {shouldShowGameDockBadge(badge) ? (
-          <span className="absolute -top-0.5 -right-2 flex h-3 w-3">
+          <span className="absolute -top-1 -right-1.5 flex h-3 w-3">
             <span className="bg-crimson absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-            <span className="bg-crimson relative inline-flex h-3 w-3 rounded-full" />
+            <span className={cn('relative inline-flex h-3 w-3 rounded-full', active ? 'bg-paper' : 'bg-crimson')} />
           </span>
         ) : null}
       </span>
@@ -85,9 +87,9 @@ export function GameBottomDock({
           <button
             type="button"
             onClick={onToggleExpanded}
-            className="hover:text-crimson shrink-0 px-1.5 py-1.5 text-center tracking-[0.08em] whitespace-nowrap transition"
+            className="hover:border-ink/40 hover:bg-ink/5 shrink-0 rounded-[2px] border border-transparent px-3 py-1.5 leading-5 tracking-[0.08em] whitespace-nowrap text-ink transition-colors duration-150"
           >
-            [{drawerOpen ? '收起' : '展开'}]
+            {drawerOpen ? '收起' : '展开'}
           </button>
         </nav>
       </div>
@@ -115,7 +117,7 @@ export function GameBottomDock({
                   <h3 className="text-battle-muted border-ink/15 mb-2 border-b border-dashed pb-1 text-xs tracking-[0.18em]">
                     {group.title}
                   </h3>
-                  <div className="grid gap-1 leading-7">
+                  <div className="grid gap-1.5 leading-7">
                     {group.actions.map((action) => (
                       <Link
                         key={action.id}
@@ -124,11 +126,13 @@ export function GameBottomDock({
                           dockMode === 'expanded' ? undefined : onToggleExpanded
                         }
                         className={cn(
-                          'hover:text-crimson min-w-0 leading-6 transition',
-                          sceneId === action.id ? 'text-crimson' : '',
+                          'inline-flex min-w-0 items-center justify-center rounded-[2px] border px-2.5 py-1 leading-6 whitespace-nowrap no-underline text-center transition-colors duration-150',
+                          sceneId === action.id
+                            ? 'border-crimson bg-crimson text-paper'
+                            : 'border-ink/25 bg-paper-2/50 text-ink hover:border-crimson/50 hover:text-crimson',
                         )}
                       >
-                        [{action.label}]
+                        {action.label}
                       </Link>
                     ))}
                   </div>
