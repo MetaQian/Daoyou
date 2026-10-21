@@ -39,6 +39,7 @@ export function ConsumableUseActions({
     return (
       <InkButton
         disabled={pending}
+        pending={pending}
         onClick={() => {
           if (lureCharges > 0) {
             openDialog({
@@ -97,12 +98,17 @@ export function ConsumableUseActions({
             (consumable.spec.kind === 'pill' &&
               (!Number.isInteger(amount) || amount < 1 || amount > max))
           }
+          pending={pending}
           onClick={() => onUse(consumable.spec.kind === 'pill' ? amount : 1)}
         >
           {consumable.spec.kind === 'pill' ? '服用' : '使用'}
         </InkButton>
       ) : actionHref ? (
-        <InkButton disabled={pending} onClick={() => navigate(actionHref)}>
+        <InkButton
+          disabled={pending}
+          pending={pending}
+          onClick={() => navigate(actionHref)}
+        >
           {beastFood
             ? '前往喂养灵兽'
             : (getTalismanActionLabel(consumable) ?? '前往使用')}
