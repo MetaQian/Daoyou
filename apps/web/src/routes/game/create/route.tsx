@@ -22,7 +22,6 @@ import { ItemCard } from '@app/components/ui/ItemCard';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { usePlayerSession } from '@app/lib/resources/player';
 import {
-  CHARACTER_GENERATION_DAILY_LIMIT,
   type CharacterGenerationQuota,
   type CharacterGenerationQuotaResponse,
   type GenerateCharacterResponse,
@@ -94,7 +93,7 @@ export default function CreatePage() {
     : false;
   const quotaHint = generationQuota
     ? `今日剩余 ${generationQuota.remaining}/${generationQuota.dailyLimit} 次 · 按邮箱与当前网络分别计数，取剩余更少者，请珍惜次数`
-    : `每日最多 ${CHARACTER_GENERATION_DAILY_LIMIT} 次 · 按邮箱与当前网络分别计数，请珍惜次数`;
+    : '每日次数有限 · 按邮箱与当前网络分别计数，请珍惜次数';
   const promptHint = `已输入 ${promptLength}/${MAX_PROMPT_LENGTH} 字 · Cmd/Ctrl + Enter 可快速提交 · ${quotaHint}`;
   const promptError = promptTooLong
     ? `角色描述过长（当前 ${promptLength} 字，最多 ${MAX_PROMPT_LENGTH} 字）。`
