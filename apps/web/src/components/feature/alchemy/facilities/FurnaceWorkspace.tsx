@@ -38,6 +38,7 @@ export function FurnaceWorkspace({
         </h3>
         <InkButton
           disabled={session.phase === 'firing'}
+          pending={session.phase === 'firing'}
           onClick={session.phase === 'result' ? onReturn : onBack}
         >
           返回炼丹房
@@ -48,6 +49,7 @@ export function FurnaceWorkspace({
           <div className="text-right md:hidden">
             <InkButton
               disabled={session.phase === 'firing'}
+              pending={session.phase === 'firing'}
               onClick={() => setBagOpen(true)}
             >
               选择炼丹材料
