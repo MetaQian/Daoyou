@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import {
   GameLoadingState,
   GameSceneAsideSection,
@@ -9,6 +8,7 @@ import { InkButton } from '@app/components/ui/InkButton';
 import { InkCard } from '@app/components/ui/InkCard';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
 import { InkList, InkListItem } from '@app/components/ui/InkList';
+import { apiFetch } from '@app/lib/api/fetch';
 import { getResourceTypeLabel } from '@daoyou/game-content/presentation/concepts';
 import { useEffect, useState } from 'react';
 
@@ -320,6 +320,7 @@ export default function DungeonHistoryPage() {
             <InkButton
               variant="ghost"
               disabled={pagination.page <= 1 || loading}
+              pending={loading}
               onClick={() => fetchHistory(pagination.page - 1)}
             >
               上一页
@@ -330,6 +331,7 @@ export default function DungeonHistoryPage() {
             <InkButton
               variant="ghost"
               disabled={pagination.page >= pagination.totalPages || loading}
+              pending={loading}
               onClick={() => fetchHistory(pagination.page + 1)}
             >
               下一页
