@@ -8,11 +8,11 @@ import {
   formatDungeonCostValue,
 } from '@app/lib/dungeon/formatDungeonCost';
 import { useInventoryBag } from '@app/lib/resources/bag';
+import type { InventoryView } from '@daoyou/contracts/inventory';
 import type {
   DungeonMaterialSelection,
   DungeonOption,
 } from '@daoyou/game-domain/dungeon';
-import type { InventoryView } from '@daoyou/contracts/inventory';
 import {
   consumeDungeonMaterials,
   dungeonMaterialMatches,
@@ -94,6 +94,7 @@ export function DungeonMaterialSubmission({
               <InkButton
                 key={costIndex}
                 disabled={busy}
+                pending={busy}
                 variant={costIndex === activeIndex ? 'primary' : 'secondary'}
                 onClick={() => setActiveIndex(costIndex)}
               >
@@ -151,6 +152,7 @@ export function DungeonMaterialSubmission({
                       </div>
                       <InkButton
                         disabled={busy}
+                        pending={busy}
                         onClick={() =>
                           setChoices((current) =>
                             current.filter((c) => c !== choice),
@@ -181,7 +183,11 @@ export function DungeonMaterialSubmission({
           </p>
           {error ? <InkNotice tone="warning">{error}</InkNotice> : null}
           <div className="flex gap-3">
-            <InkButton disabled={processing} onClick={onClose}>
+            <InkButton
+              disabled={processing}
+              pending={processing}
+              onClick={onClose}
+            >
               取消
             </InkButton>
             <InkButton
@@ -200,6 +206,7 @@ export function DungeonMaterialSubmission({
             actions={
               <InkButton
                 disabled={processing || loading}
+                pending={processing || loading}
                 onClick={() => void refresh()}
               >
                 刷新选物
@@ -230,6 +237,7 @@ export function DungeonMaterialSubmission({
                         ) : null}
                         <InkButton
                           disabled={busy || !eligible}
+                          pending={busy}
                           onClick={() => {
                             toggle(item);
                             close();
