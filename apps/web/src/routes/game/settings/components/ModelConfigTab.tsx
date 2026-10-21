@@ -125,6 +125,7 @@ export function ModelConfigTab() {
             variant="secondary"
             onClick={handleClear}
             disabled={loading}
+            pending={loading}
           >
             清除配置
           </InkButton>
