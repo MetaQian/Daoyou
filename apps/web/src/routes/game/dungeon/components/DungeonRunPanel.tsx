@@ -1,18 +1,18 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { InventoryHeader } from '@app/components/feature/items/InventoryHeader';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { useResourceMutation } from '@app/lib/resources/mutations';
 import { useCultivatorCondition } from '@app/lib/resources/player';
 import type { InventoryView } from '@daoyou/contracts/inventory';
+import type { Cultivator } from '@daoyou/game-domain/character';
+import type { DungeonState } from '@daoyou/game-domain/dungeon';
 import { ConsumableFactsSchema } from '@daoyou/game-domain/inventory';
 import { canUseDungeonRecoveryPill } from '@daoyou/game-rules/dungeon';
-import type { DungeonState } from '@daoyou/game-domain/dungeon';
 import { dungeonRewardItemName } from '@daoyou/game-rules/rewards/dungeon';
-import type { Cultivator } from '@daoyou/game-domain/character';
 import { useRef, useState } from 'react';
 
 export interface DungeonDisplayResources {
@@ -106,12 +106,14 @@ export function DungeonRunPanel({
         <div className="flex gap-2">
           <InkButton
             disabled={processing || pending}
+            pending={processing || pending}
             onClick={() => void readInventory()}
           >
             休整与收获
           </InkButton>
           <InkButton
             disabled={pending || processing || !!state.activeBattleId}
+            pending={pending || processing}
             onClick={() => void onQuit()}
           >
             结束探索
@@ -147,6 +149,7 @@ export function DungeonRunPanel({
             actions={
               <InkButton
                 disabled={pending || processing}
+                pending={pending || processing}
                 onClick={() => void readInventory()}
               >
                 {pending ? '正在核实…' : '重新读取'}
@@ -173,6 +176,7 @@ export function DungeonRunPanel({
                           disabled={
                             !eligible || pending || processing || unavailable
                           }
+                          pending={pending || processing}
                           onClick={() => {
                             close();
                             void consume(item);
