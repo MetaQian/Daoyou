@@ -1,23 +1,23 @@
 import { InkButton } from '@app/components/ui/InkButton';
 import { useInventoryBag } from '@app/lib/resources/bag';
-import type {
-  ManualAction,
-  CharacterManualDefV1,
-} from '@daoyou/game-domain/manuals';
-import type { ManualView } from '@daoyou/contracts/manuals';
 import type { InventoryView } from '@daoyou/contracts/inventory';
+import type { ManualView } from '@daoyou/contracts/manuals';
+import { CHARACTER_MANUALS_V1, manualRule } from '@daoyou/game-content/manuals';
+import { CHARACTER_ATTRIBUTE_LABELS } from '@daoyou/game-domain/character';
+import type {
+  CharacterManualDefV1,
+  ManualAction,
+} from '@daoyou/game-domain/manuals';
+import { itemDefinition } from '@daoyou/game-rules/inventory';
+import {
+  manualJadeCost,
+  previewManualAction,
+} from '@daoyou/game-rules/manuals';
+import { manualEffectLines } from '@daoyou/game-rules/manuals/presentation';
 import {
   manualAttributeValue,
   manualSlot,
 } from '@daoyou/game-rules/manuals/projection';
-import {
-  CHARACTER_MANUALS_V1,
-  manualRule,
-} from '@daoyou/game-content/manuals';
-import { manualEffectLines } from '@daoyou/game-rules/manuals/presentation';
-import { itemDefinition } from '@daoyou/game-rules/inventory';
-import { CHARACTER_ATTRIBUTE_LABELS } from '@daoyou/game-domain/character';
-import { manualJadeCost, previewManualAction } from '@daoyou/game-rules/manuals';
 import { ManualProgress } from './ManualProgress';
 import { manualMechanismSummary } from './manualPresentation';
 
@@ -123,6 +123,7 @@ export function ManualDetail({
         {progress && !active && target ? (
           <InkButton
             disabled={blocked}
+            pending={blocked}
             onClick={() => onSubmit({ ...target, action: 'activate' })}
             className="min-h-11 shrink-0"
           >
