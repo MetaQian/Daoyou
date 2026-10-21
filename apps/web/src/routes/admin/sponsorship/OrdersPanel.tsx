@@ -1,5 +1,5 @@
-import { AdminDialog } from '@app/routes/admin/_components/AdminDialog';
 import { InkButton } from '@app/components/ui/InkButton';
+import { AdminDialog } from '@app/routes/admin/_components/AdminDialog';
 import { SPONSORSHIP_TIER_META } from '@daoyou/game-domain/sponsorship';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -75,7 +75,9 @@ export function OrdersPanel({
   ) => {
     if (
       action === 'revoke' &&
-      !window.confirm('确认撤销该订单的功德记录？角色最高档位会按剩余记录重算。')
+      !window.confirm(
+        '确认撤销该订单的功德记录？角色最高档位会按剩余记录重算。',
+      )
     )
       return;
     setBusy(true);
@@ -105,7 +107,11 @@ export function OrdersPanel({
   };
 
   const revealSnapshot = async (snapshotId: string) => {
-    if (!window.confirm('原始快照可能包含支付信息，查看会写入审计日志。确认继续？'))
+    if (
+      !window.confirm(
+        '原始快照可能包含支付信息，查看会写入审计日志。确认继续？',
+      )
+    )
       return;
     setBusy(true);
     try {
@@ -185,6 +191,7 @@ export function OrdersPanel({
                   <td className="text-right">
                     <InkButton
                       disabled={busy}
+                      pending={busy}
                       onClick={() => void openOrder(item.id)}
                     >
                       处理
@@ -204,6 +211,7 @@ export function OrdersPanel({
           <InkButton
             variant="secondary"
             disabled={page <= 1 || busy}
+            pending={busy}
             onClick={() => setPage((current) => current - 1)}
           >
             上一页
@@ -211,6 +219,7 @@ export function OrdersPanel({
           <InkButton
             variant="secondary"
             disabled={page * 20 >= total || busy}
+            pending={busy}
             onClick={() => setPage((current) => current + 1)}
           >
             下一页
@@ -232,6 +241,7 @@ export function OrdersPanel({
               <InkButton
                 variant="secondary"
                 disabled={busy || order.fulfillmentStatus === 'revoked'}
+                pending={busy}
                 onClick={() => void act(order.id, 'retry')}
               >
                 重试
@@ -243,6 +253,7 @@ export function OrdersPanel({
                   order.fulfillmentStatus === 'fulfilled' ||
                   order.fulfillmentStatus === 'revoked'
                 }
+                pending={busy}
                 onClick={() => void act(order.id, 'rotate-claim')}
               >
                 轮换认领码
@@ -250,6 +261,7 @@ export function OrdersPanel({
               <InkButton
                 variant="primary"
                 disabled={busy || order.fulfillmentStatus === 'revoked'}
+                pending={busy}
                 onClick={() => void act(order.id, 'revoke')}
               >
                 撤销功德
@@ -314,6 +326,7 @@ export function OrdersPanel({
                   </span>
                   <InkButton
                     disabled={busy}
+                    pending={busy}
                     onClick={() => void revealSnapshot(snapshot.id)}
                   >
                     查看
