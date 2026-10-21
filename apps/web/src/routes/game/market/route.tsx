@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { InventoryHeader } from '@app/components/feature/items/InventoryHeader';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
 import {
@@ -11,6 +10,7 @@ import { InkButton } from '@app/components/ui/InkButton';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
 import { InkDialog, type InkDialogState } from '@app/components/ui/InkDialog';
 import { SpiritStones } from '@app/components/ui/SpiritStones';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import {
@@ -21,11 +21,14 @@ import type {
   MarketBuyInput,
   MarketPurchaseResult,
 } from '@daoyou/contracts/market';
+import type {
+  MarketAccessState,
+  MarketListing,
+} from '@daoyou/game-domain/market';
 import {
   getMarketNodeSwitchOptions,
   resolveMarketSwitchLayer,
 } from '@daoyou/game-rules/world/market';
-import type { MarketAccessState, MarketListing } from '@daoyou/game-domain/market';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useSearchParams } from 'react-router';
 
@@ -244,7 +247,11 @@ function MarketWorkspace({
       <InventoryHeader
         capacity={<> {bag?.used ?? '—'} / 40</>}
         actions={
-          <InkButton disabled={pending} onClick={() => void bagQuery.reload()}>
+          <InkButton
+            disabled={pending}
+            pending={pending}
+            onClick={() => void bagQuery.reload()}
+          >
             刷新
           </InkButton>
         }
@@ -290,6 +297,7 @@ function MarketWorkspace({
           {currentNode?.allowedLayers.includes('black') ? (
             <InkButton
               disabled={pending}
+              pending={pending}
               href={`/game/black-market?nodeId=${encodeURIComponent(nodeId)}`}
             >
               暗巷黑市 <span aria-hidden="true">↗</span>
@@ -355,6 +363,7 @@ function MarketWorkspace({
               <InkButton
                 className="ml-3"
                 disabled={pending}
+                pending={pending}
                 onClick={refreshShelf}
               >
                 重试
@@ -428,6 +437,7 @@ function MarketWorkspace({
                       </p>
                       <InkButton
                         disabled={locked || item.quantity <= 0}
+                        pending={locked}
                         onClick={() => {
                           toggle(item);
                           close();
@@ -443,7 +453,7 @@ function MarketWorkspace({
                   )}
                 </ItemSlot>
                 <p
-                  className="mt-1 flex items-center justify-center gap-1 whitespace-nowrap text-xs"
+                  className="mt-1 flex items-center justify-center gap-1 text-xs whitespace-nowrap"
                   aria-label={`售价 ${item.price} 灵石`}
                 >
                   <GameIcon value="💰" className="-translate-y-px" />
@@ -480,11 +490,16 @@ function MarketWorkspace({
             </strong>
           </span>
           <div className="flex items-center gap-3">
-            <InkButton disabled={pending} onClick={() => setSelected([])}>
+            <InkButton
+              disabled={pending}
+              pending={pending}
+              onClick={() => setSelected([])}
+            >
               清空选择
             </InkButton>
             <InkButton
               disabled={locked || insufficient || currency === undefined}
+              pending={locked}
               onClick={confirmBuy}
             >
               {pending ? '正在成交……' : insufficient ? '灵石不足' : '购买所选'}
