@@ -125,8 +125,7 @@ export default function BeastWarehousePage() {
   }
 
   const stored = list.data?.beasts ?? [];
-  const fromPage =
-    stored.find((beast) => beast.id === selectedId) ?? stored[0];
+  const fromPage = stored.find((beast) => beast.id === selectedId) ?? stored[0];
   const selected =
     override &&
     fromPage &&
@@ -244,6 +243,7 @@ export default function BeastWarehousePage() {
                 href="/game/beasts"
                 variant="secondary"
                 disabled={pending}
+                pending={pending}
               >
                 返回灵兽袋
               </InkButton>
@@ -257,14 +257,14 @@ export default function BeastWarehousePage() {
             <span className="flex flex-wrap items-center gap-1">
               <InkButton
                 disabled={pending || !ownerId}
+                pending={pending}
                 onClick={() => openFusion(selected?.id)}
               >
                 融合
               </InkButton>
               <InkButton
-                disabled={
-                  pending || warehouseCount >= BEAST_WAREHOUSE_CAPACITY
-                }
+                disabled={pending || warehouseCount >= BEAST_WAREHOUSE_CAPACITY}
+                pending={pending}
                 onClick={() => setStoring(true)}
               >
                 从灵兽袋存入
@@ -421,7 +421,11 @@ export default function BeastWarehousePage() {
                       </span>
                     </span>
                   </span>
-                  <InkButton disabled={pending} onClick={() => deposit(beast)}>
+                  <InkButton
+                    disabled={pending}
+                    pending={pending}
+                    onClick={() => deposit(beast)}
+                  >
                     存入
                   </InkButton>
                 </li>
