@@ -14,8 +14,8 @@ import type {
   DungeonState,
 } from '@daoyou/game-domain/dungeon';
 import {
-  isConditionStatusActive,
   getConditionStatusTemplate,
+  isConditionStatusActive,
 } from '@daoyou/game-rules/condition';
 import { dungeonReadiness } from '@daoyou/game-rules/dungeon';
 import { canChallengeDungeonRealm } from '@daoyou/game-rules/world/dungeon';
@@ -348,6 +348,7 @@ export function DungeonViewRenderer({
                 key={action}
                 variant={recoverActionVariants[action]}
                 disabled={processing}
+                pending={processing}
                 onClick={() => actions.recoverDungeon(action)}
               >
                 {recoverActionLabels[action]}
