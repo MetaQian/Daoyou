@@ -93,7 +93,13 @@ export function ManualPanel({
         <p className="text-ink-secondary mt-1 max-w-xl text-sm">
           按已履约、且不早于自动处理起点的订阅订单，向爱发电核对到期时间。
         </p>
-        <InkButton className="mt-3" variant="primary" disabled={busy} onClick={() => void sync()}>
+        <InkButton
+          className="mt-3"
+          variant="primary"
+          disabled={busy}
+          pending={busy}
+          onClick={() => void sync()}
+        >
           开始同步
         </InkButton>
       </section>
@@ -124,6 +130,7 @@ export function ManualPanel({
           <InkButton
             variant="primary"
             disabled={busy || !providerUserId.trim() || !cultivatorId.trim()}
+            pending={busy}
             onClick={() => void rebind()}
           >
             改绑
@@ -193,6 +200,7 @@ export function ManualPanel({
           <InkButton
             variant="primary"
             disabled={busy || !grantCultivatorId.trim()}
+            pending={busy}
             onClick={() => void grant()}
           >
             补记
