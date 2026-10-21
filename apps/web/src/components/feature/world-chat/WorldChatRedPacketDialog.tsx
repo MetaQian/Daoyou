@@ -124,15 +124,15 @@ export function WorldChatGiveRedPacketDialog({
             (!resumed && feed.cooldownRemaining > 0)
           }
         >
-          {resumed
-            ? '确认之前的红包'
-            : feed.cooldownRemaining > 0
-              ? `${feed.cooldownRemaining} 秒后可发送`
-              : (
-                  <>
-                    确认发出 <SpiritStones amount={amountValue || 0} />
-                  </>
-                )}
+          {resumed ? (
+            '确认之前的红包'
+          ) : feed.cooldownRemaining > 0 ? (
+            `${feed.cooldownRemaining} 秒后可发送`
+          ) : (
+            <>
+              确认发出 <SpiritStones amount={amountValue || 0} />
+            </>
+          )}
         </InkButton>
       }
     >
@@ -170,6 +170,7 @@ export function WorldChatGiveRedPacketDialog({
             <InkButton
               key={value}
               disabled={pending || !!resumed}
+              pending={pending}
               onClick={() => setAmount(String(value))}
             >
               {value / 10_000} 万
@@ -223,14 +224,12 @@ export function WorldChatGiveRedPacketDialog({
           <p className="text-sm">
             {mode === 'equal' ? (
               <>
-                每份{' '}
-                <SpiritStones amount={amountValue / countValue} />
+                每份 <SpiritStones amount={amountValue / countValue} />
               </>
             ) : (
               <>
-                共{' '}
-                <SpiritStones amount={amountValue} />，随机分为 <span className="font-mono">{countValue}</span>{' '}
-                份
+                共 <SpiritStones amount={amountValue} />
+                ，随机分为 <span className="font-mono">{countValue}</span> 份
               </>
             )}
           </p>
@@ -392,8 +391,8 @@ export function WorldChatRedPacketDialog({
             ) : null}
             {canRefund ? (
               <p className="text-sm">
-                待退款{' '}
-                <SpiritStones amount={detail.packet.refundAmount} />，将退回当前活跃角色。
+                待退款 <SpiritStones amount={detail.packet.refundAmount} />
+                ，将退回当前活跃角色。
               </p>
             ) : null}
           </div>
@@ -403,8 +402,7 @@ export function WorldChatRedPacketDialog({
               {detail.packet.count - detail.packet.remainingCount}/
               {detail.packet.count}
             </span>{' '}
-            份 · 共{' '}
-            <SpiritStones amount={detail.packet.amount} />
+            份 · 共 <SpiritStones amount={detail.packet.amount} />
           </p>
           <div className="divide-ink/10 divide-y">
             {detail.claims.map((claim, index) => (
