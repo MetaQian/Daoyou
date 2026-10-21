@@ -34,15 +34,16 @@ export const SaveCharacterSchema = z.object({
 const MIN_PROMPT_LENGTH = 2;
 const MAX_PROMPT_LENGTH = 200;
 function quotaExceededMessage(quota: CharacterGenerationQuota): string {
+  const limit = quota.dailyLimit;
   switch (quota.limitedBy) {
     case 'email':
-      return '该邮箱今日角色推演次数已用尽（每日限 6 次），请明日再试。';
+      return `该邮箱今日角色推演次数已用尽（每日限 ${limit} 次），请明日再试。`;
     case 'ip':
-      return '当前网络今日角色推演次数已用尽（每日限 6 次），请明日再试。';
+      return `当前网络今日角色推演次数已用尽（每日限 ${limit} 次），请明日再试。`;
     case 'both':
-      return '该邮箱与当前网络今日角色推演次数均已用尽，请明日再试。';
+      return `该邮箱与当前网络今日角色推演次数均已用尽（每日限 ${limit} 次），请明日再试。`;
     default:
-      return '今日角色推演次数已用尽，请明日再试。';
+      return `今日角色推演次数已用尽（每日限 ${limit} 次），请明日再试。`;
   }
 }
 
