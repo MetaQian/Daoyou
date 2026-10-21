@@ -8,13 +8,13 @@ import { GameIcon } from '@app/components/ui/GameIcon';
 import { GameImage } from '@app/components/ui/GameImage';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
+import { cn } from '@app/lib/cn';
+import { REALM_VALUES } from '@daoyou/constants/realms';
 import {
   CHARACTER_MANUALS_V1,
   ENLIGHTENMENT_REALMS,
 } from '@daoyou/game-content/manuals';
-import { cn } from '@app/lib/cn';
 import { enlightenmentQualityCap } from '@daoyou/game-rules/manuals';
-import { REALM_VALUES } from '@daoyou/constants/realms';
 import { useState } from 'react';
 import { CraftInventoryPanel } from '../items/CraftInventoryPanel';
 import { InventoryItems } from '../items/InventoryItems';
@@ -154,7 +154,11 @@ export function EnlightenmentRoom({ ownerId }: { ownerId: string }) {
         {session.error ? (
           <p role="alert" className="text-crimson">
             {session.error}{' '}
-            <InkButton disabled={session.pending} onClick={session.reload}>
+            <InkButton
+              disabled={session.pending}
+              pending={session.pending}
+              onClick={session.reload}
+            >
               重新核对
             </InkButton>
           </p>
@@ -164,6 +168,7 @@ export function EnlightenmentRoom({ ownerId }: { ownerId: string }) {
             <p>有一次参悟尚待核对，请先确认本次结果。</p>
             <InkButton
               disabled={session.pending}
+              pending={session.pending}
               onClick={() => void session.submit()}
             >
               核对本次结果
@@ -217,6 +222,7 @@ export function EnlightenmentRoom({ ownerId }: { ownerId: string }) {
                         ? (close) => (
                             <InkButton
                               disabled={session.locked}
+                              pending={session.locked}
                               onClick={() => {
                                 session.remove(index);
                                 close();
@@ -325,6 +331,7 @@ export function EnlightenmentRoom({ ownerId }: { ownerId: string }) {
                   <InkButton
                     className="md:hidden"
                     disabled={session.locked}
+                    pending={session.locked}
                     onClick={openBag}
                   >
                     选择典籍
@@ -417,6 +424,7 @@ export function EnlightenmentRoom({ ownerId }: { ownerId: string }) {
               <InkButton onClick={() => setDrawer(undefined)}>取消</InkButton>
               <InkButton
                 disabled={session.locked || !!session.problem}
+                pending={session.locked}
                 onClick={() => {
                   setDrawer(undefined);
                   void session.submit();
