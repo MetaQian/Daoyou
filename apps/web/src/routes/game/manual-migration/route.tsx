@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import {
   combatV6Request,
   mutationBody,
@@ -8,12 +7,13 @@ import { GameSceneFrame } from '@app/components/game-shell/GameSceneFrame';
 import { InkModal } from '@app/components/layout/InkModal';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkQuantityInput } from '@app/components/ui/InkQuantityInput';
+import { apiFetch } from '@app/lib/api/fetch';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { usePlayerSession } from '@app/lib/resources/player';
-import type { ManualMigrationResult } from '@daoyou/game-domain/legacy/migrations';
+import type { Quality } from '@daoyou/constants/qualities';
 import type { ManualMigrationView } from '@daoyou/contracts/legacy/manuals';
 import type { ItemGrant } from '@daoyou/game-domain/inventory';
-import type { Quality } from '@daoyou/constants/qualities';
+import type { ManualMigrationResult } from '@daoyou/game-domain/legacy/migrations';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const endpoint = '/api/manual-migration';
@@ -155,6 +155,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
         <InkButton
           variant="secondary"
           disabled={busy}
+          pending={busy}
           onClick={() => void reload()}
         >
           刷新核对
@@ -206,6 +207,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                   </div>
                   <InkButton
                     disabled={busy || !!view.blockedReason || !!source.problem}
+                    pending={busy}
                     onClick={() => {
                       setSelected({});
                       setRealm('炼气');
@@ -229,6 +231,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                 </span>
                 <InkButton
                   disabled={(currentPage + 1) * 20 >= pending.length}
+                  pending={(currentPage + 1) * 20 >= pending.length}
                   onClick={() => setPage(currentPage + 1)}
                 >
                   下一页
@@ -247,6 +250,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                 <InkButton
                   variant="secondary"
                   disabled={busy}
+                  pending={busy}
                   onClick={() => setConfirm(null)}
                 >
                   取消
@@ -258,6 +262,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                     !confirm ||
                     total !== confirm.choices
                   }
+                  pending={busy}
                   onClick={() => void submit()}
                 >
                   {busy ? '正在结算…' : '兑换并全部领取'}
