@@ -1,7 +1,7 @@
 import { BeastIcon } from '@app/components/feature/beasts/BeastIcon';
 import { BeastPickerPager } from '@app/components/feature/beasts/beastPicker';
-import { useBeastPicker } from '@app/components/feature/beasts/useBeastPicker';
 import { BeastTradeDetails } from '@app/components/feature/beasts/BeastTradePreview';
+import { useBeastPicker } from '@app/components/feature/beasts/useBeastPicker';
 import { InventoryHeader } from '@app/components/feature/items/InventoryHeader';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
 import { ItemSlot } from '@app/components/feature/items/ItemSlot';
@@ -84,6 +84,7 @@ export function WorldChatShowcaseDialog({
         actions={
           <InkButton
             disabled={posting || bagQuery.isRefreshing}
+            pending={posting}
             onClick={() => void refresh()}
           >
             刷新选物
@@ -100,6 +101,7 @@ export function WorldChatShowcaseDialog({
             ? (close) => (
                 <InkButton
                   disabled={busy}
+                  pending={busy}
                   onClick={() => {
                     close();
                     choose(item);
@@ -126,6 +128,7 @@ export function WorldChatShowcaseDialog({
                 {(close) => (
                   <InkButton
                     disabled={busy}
+                    pending={busy}
                     onClick={() => {
                       close();
                       choose(item);
@@ -176,7 +179,11 @@ export function WorldChatShowcaseDialog({
           </div>
           {source === 'items' && (
             <div className="lg:hidden">
-              <InkButton disabled={posting} onClick={() => setBagOpen(true)}>
+              <InkButton
+                disabled={posting}
+                pending={posting}
+                onClick={() => setBagOpen(true)}
+              >
                 选择随身物品
               </InkButton>
             </div>
@@ -223,7 +230,7 @@ export function WorldChatShowcaseDialog({
             展示发送时的物品状态，不消耗物品。
           </p>
           <div className="flex justify-end gap-3">
-            <InkButton disabled={posting} onClick={onClose}>
+            <InkButton disabled={posting} pending={posting} onClick={onClose}>
               取消
             </InkButton>
             <InkButton
