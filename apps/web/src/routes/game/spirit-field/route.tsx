@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { VaultWithdrawal } from '@app/components/feature/forging/VaultWithdrawal';
 import { CraftInventoryPanel } from '@app/components/feature/items/CraftInventoryPanel';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
@@ -14,18 +13,19 @@ import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkNotice } from '@app/components/ui';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
 import { SpiritStones } from '@app/components/ui/SpiritStones';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { useCraftStorage } from '@app/lib/resources/craftStorage';
 import { useResourceMutation } from '@app/lib/resources/mutations';
+import type { RealmType } from '@daoyou/constants/realms';
 import type { InventoryView } from '@daoyou/contracts/inventory';
-import { canPlantSpiritFieldSeed } from '@daoyou/game-rules/spirit-field';
+import { findItemDefinition } from '@daoyou/game-content/items';
 import {
   ConsumableFactsSchema,
   SeedFactsSchema,
   materialFactsOf,
 } from '@daoyou/game-domain/inventory';
-import { findItemDefinition } from '@daoyou/game-content/items';
-import type { RealmType } from '@daoyou/constants/realms';
+import { canPlantSpiritFieldSeed } from '@daoyou/game-rules/spirit-field';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Resource = {
@@ -263,14 +263,14 @@ export default function SpiritFieldPage() {
       else
         pushToast({
           message:
-            (result.message ?? (url.endsWith('/starter')
-              ? '已领取初始灵种'
-              : url.endsWith('/sow')
-                ? '已播种'
-                : url.endsWith('/harvest')
-                  ? '已收获'
-                  : '已完成培育')) +
-            (destination ? ' · ' + destination : ''),
+            (result.message ??
+              (url.endsWith('/starter')
+                ? '已领取初始灵种'
+                : url.endsWith('/sow')
+                  ? '已播种'
+                  : url.endsWith('/harvest')
+                    ? '已收获'
+                    : '已完成培育')) + (destination ? ' · ' + destination : ''),
           tone: 'success',
         });
     } catch (e) {
@@ -397,6 +397,7 @@ export default function SpiritFieldPage() {
                       !!inventoryError ||
                       !canChoose(item)
                     }
+                    pending={busy}
                     onClick={() => {
                       choose(item);
                       close();
@@ -427,6 +428,7 @@ export default function SpiritFieldPage() {
           {!snapshot.profile.starterClaimed ? (
             <InkButton
               disabled={busy}
+              pending={busy}
               onClick={() => void act('/api/spirit-field/starter', {})}
             >
               领取初始灵种
@@ -548,6 +550,7 @@ export default function SpiritFieldPage() {
                 <InkButton
                   variant="primary"
                   disabled={busy || !chosen || !canChoose(chosen)}
+                  pending={busy}
                   onClick={() =>
                     void act('/api/spirit-field/sow', {
                       plotIndex: selected.index,
@@ -562,20 +565,28 @@ export default function SpiritFieldPage() {
               {selected.status === 'awaiting_cultivation' && method ? (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="text-ink-secondary text-sm">
-                    {needsItem
-                      ? ''
-                      : method.resourceKind === 'none'
-                        ? '无需消耗'
-                        : method.resourceKind === 'spirit_stones'
-                          ? <SpiritStones amount={method.cost.amount} />
-                          : `${({ qi: '天地灵气', mp: '法力' } as Record<string, string>)[method.resourceKind]} ${method.cost.amount}`}
-                    {method.cost.spiritStones ? <> <SpiritStones amount={method.cost.spiritStones} /></> : null}
+                    {needsItem ? (
+                      ''
+                    ) : method.resourceKind === 'none' ? (
+                      '无需消耗'
+                    ) : method.resourceKind === 'spirit_stones' ? (
+                      <SpiritStones amount={method.cost.amount} />
+                    ) : (
+                      `${({ qi: '天地灵气', mp: '法力' } as Record<string, string>)[method.resourceKind]} ${method.cost.amount}`
+                    )}
+                    {method.cost.spiritStones ? (
+                      <>
+                        {' '}
+                        <SpiritStones amount={method.cost.spiritStones} />
+                      </>
+                    ) : null}
                   </span>
                   <InkButton
                     variant="primary"
                     disabled={
                       busy || (needsItem && (!chosen || !canChoose(chosen)))
                     }
+                    pending={busy}
                     onClick={() =>
                       void act('/api/spirit-field/cultivate', {
                         plotIndex: selected.index,
@@ -606,6 +617,7 @@ export default function SpiritFieldPage() {
                 <InkButton
                   variant="primary"
                   disabled={busy || bagUnavailable}
+                  pending={busy}
                   onClick={() =>
                     void act('/api/spirit-field/harvest', {
                       plotIndex: selected.index,
