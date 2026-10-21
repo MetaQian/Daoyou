@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
 import type { MaterialType } from '@app/components/feature/items/inventoryFilterModel';
 import { GameSceneFrame } from '@app/components/game-shell/GameSceneFrame';
@@ -7,17 +6,23 @@ import { InkButton } from '@app/components/ui/InkButton';
 import { InkDiscreteRange } from '@app/components/ui/InkDiscreteRange';
 import { InkQuantityInput } from '@app/components/ui/InkQuantityInput';
 import { SpiritStones } from '@app/components/ui/SpiritStones';
+import { apiFetch } from '@app/lib/api/fetch';
 import { inventoryBagResource, useInventoryBag } from '@app/lib/resources/bag';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { usePlayerSession } from '@app/lib/resources/player';
 import { resourceStore } from '@app/lib/resources/store';
+import {
+  QUALITY_ORDER,
+  QUALITY_VALUES,
+  type Quality,
+} from '@daoyou/constants/qualities';
 import type { InventoryView } from '@daoyou/contracts/inventory';
 import type {
   RecycleQuote,
   RecycleResult,
   RecycleSelection,
 } from '@daoyou/contracts/recycle';
-import { recycleBlockingReason } from '@daoyou/game-rules/inventory/recycle';
+import { findItemDefinition } from '@daoyou/game-content/items';
 import {
   ConsumableFactsSchema,
   INVENTORY_MATERIAL_TYPES,
@@ -25,8 +30,7 @@ import {
   SeedFactsSchema,
   materialFactsOf,
 } from '@daoyou/game-domain/inventory';
-import { findItemDefinition } from '@daoyou/game-content/items';
-import { QUALITY_ORDER, QUALITY_VALUES, type Quality } from '@daoyou/constants/qualities';
+import { recycleBlockingReason } from '@daoyou/game-rules/inventory/recycle';
 import { useEffect, useRef, useState } from 'react';
 
 type Item = InventoryView['items'][number];
@@ -187,7 +191,9 @@ export default function MarketRecyclePage() {
   const [message, setMessage] = useState(
     '把要出手的材料、灵种、道装、图纸、功法玉简、丹药和灵果挑出来，我给你报个实价。',
   );
-  const [receipts, setReceipts] = useState<{ quantity: number; total: number }[]>([]);
+  const [receipts, setReceipts] = useState<
+    { quantity: number; total: number }[]
+  >([]);
   const [pending, setPending] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const readError = bagQuery.error;
@@ -462,7 +468,10 @@ export default function MarketRecyclePage() {
           body: JSON.stringify({ phase: 'confirm', quoteId: currentQuote.id }),
         }),
       );
-      setReceipts((previous) => [...previous.slice(-4), { quantity: result.quantity, total: result.total }]);
+      setReceipts((previous) => [
+        ...previous.slice(-4),
+        { quantity: result.quantity, total: result.total },
+      ]);
       setMessage('银货两清。还有要出手的，尽管拿来。');
       setSelection([]);
       setQuote(undefined);
@@ -530,7 +539,8 @@ export default function MarketRecyclePage() {
                               </span>
                             </span>
                             <span className="shrink-0">
-                              <SpiritStones amount={item.unitPrice} />/份
+                              <SpiritStones amount={item.unitPrice} />
+                              /份
                             </span>
                           </div>
                           {item.comment ? (
@@ -549,7 +559,9 @@ export default function MarketRecyclePage() {
                   </details>
                   <p className="hidden justify-between text-sm lg:flex">
                     <span>合计</span>
-                    <strong><SpiritStones amount={currentQuote.total} /></strong>
+                    <strong>
+                      <SpiritStones amount={currentQuote.total} />
+                    </strong>
                   </p>
                 </>
               ) : !quoteError ? (
@@ -567,18 +579,24 @@ export default function MarketRecyclePage() {
                   <InkButton
                     className="hidden lg:inline-flex"
                     disabled={pending}
+                    pending={pending}
                     onClick={() => void sell()}
                   >
                     {pending ? '正在成交……' : '出售所选'}
                   </InkButton>
                 ) : null}
                 {quoteError ? (
-                  <InkButton disabled={pending} onClick={() => void requote()}>
+                  <InkButton
+                    disabled={pending}
+                    pending={pending}
+                    onClick={() => void requote()}
+                  >
                     重新询价
                   </InkButton>
                 ) : null}
                 <InkButton
                   disabled={pending}
+                  pending={pending}
                   onClick={() => {
                     setSelection([]);
                     setQuote(undefined);
@@ -595,7 +613,10 @@ export default function MarketRecyclePage() {
               <summary className="cursor-pointer">本次成交记录</summary>
               <div className="mt-2 max-h-28 space-y-2 overflow-y-auto">
                 {receipts.map((receipt, index) => (
-                  <p key={index}>收妥 {receipt.quantity} 份，付你 <SpiritStones amount={receipt.total} />。</p>
+                  <p key={index}>
+                    收妥 {receipt.quantity} 份，付你{' '}
+                    <SpiritStones amount={receipt.total} />。
+                  </p>
                 ))}
               </div>
             </details>
@@ -624,6 +645,7 @@ export default function MarketRecyclePage() {
             <div className="flex flex-wrap gap-2">
               <InkButton
                 disabled={pending}
+                pending={pending}
                 onClick={() => {
                   setDraftCategory(filterCategory);
                   setDraftMinQuality(minQuality);
@@ -640,7 +662,7 @@ export default function MarketRecyclePage() {
               >
                 批量选本页
               </InkButton>
-              <InkButton disabled={pending} onClick={reload}>
+              <InkButton disabled={pending} pending={pending} onClick={reload}>
                 刷新
               </InkButton>
             </div>
@@ -740,6 +762,7 @@ export default function MarketRecyclePage() {
           </span>
           <InkButton
             disabled={pending || !currentQuote}
+            pending={pending}
             onClick={() => void sell()}
           >
             {pending ? '正在成交……' : '出售所选'}
@@ -838,7 +861,7 @@ export default function MarketRecyclePage() {
           </label>
           <div className="flex justify-end gap-2">
             <InkButton onClick={() => setFilterOpen(false)}>取消</InkButton>
-            <InkButton type="submit" disabled={pending}>
+            <InkButton type="submit" disabled={pending} pending={pending}>
               应用筛选
             </InkButton>
           </div>
