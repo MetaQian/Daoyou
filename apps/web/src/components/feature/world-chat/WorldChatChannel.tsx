@@ -728,6 +728,7 @@ function WorldChatChannelBody({
                         </span>
                         <InkButton
                           disabled={feed.cooldownRemaining > 0 || feed.posting}
+                          pending={feed.posting}
                           onClick={() =>
                             void feed.retryMessage(message.clientMessageId)
                           }
@@ -834,6 +835,7 @@ function WorldChatChannelBody({
                 <div className="flex items-center gap-1">
                   <InkButton
                     disabled={feed.posting}
+                    pending={feed.posting}
                     className="min-h-11"
                     variant="secondary"
                     onClick={() => setShowcaseOpen(true)}
@@ -843,6 +845,7 @@ function WorldChatChannelBody({
                   </InkButton>
                   <InkButton
                     disabled={feed.posting}
+                    pending={feed.posting}
                     className="min-h-11"
                     variant="secondary"
                     onClick={() => setGiveOpen(true)}
@@ -875,6 +878,7 @@ function WorldChatChannelBody({
                       connection === 'offline' ||
                       connection === 'blocked'
                     }
+                    pending={feed.posting || connection === 'blocked'}
                   >
                     {feed.cooldownRemaining > 0
                       ? `${feed.cooldownRemaining}s`
