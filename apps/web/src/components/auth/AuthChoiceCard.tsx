@@ -20,7 +20,7 @@ export function AuthChoiceCard({
 }: AuthChoiceCardProps) {
   const className = cn(
     'group block w-full border border-dashed p-4 text-left no-underline transition-colors duration-200',
-    'border-ink/18 bg-transparent hover:border-crimson/35',
+    'border-ink/18 bg-transparent hover:border-crimson/35 hover:bg-crimson/5',
     accent === 'primary' && 'border-crimson/35',
     disabled && 'pointer-events-none opacity-55',
   );
@@ -33,7 +33,14 @@ export function AuthChoiceCard({
           {description}
         </p>
       </div>
-      <span className="text-crimson/80 text-sm">[进入]</span>
+      <span
+        className={cn(
+          'shrink-0 rounded-[2px] border px-3 py-1 text-[0.95rem] leading-none tracking-[0.08em] transition-colors duration-150',
+          'border-crimson/45 text-crimson group-hover:border-crimson group-hover:bg-crimson group-hover:text-paper',
+        )}
+      >
+        进入
+      </span>
     </div>
   );
 
