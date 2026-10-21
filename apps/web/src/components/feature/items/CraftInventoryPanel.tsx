@@ -56,7 +56,7 @@ export function CraftInventoryPanel({
               ? `${view?.used ?? '—'} / 40`
               : `${view?.total ?? '—'} 格`}
           </span>
-          <InkButton disabled={loading} onClick={onReload}>
+          <InkButton disabled={loading} pending={loading} onClick={onReload}>
             刷新
           </InkButton>
         </div>
@@ -76,6 +76,7 @@ export function CraftInventoryPanel({
         <div className="flex items-center justify-between">
           <InkButton
             disabled={loading || view.page === 0}
+            pending={loading}
             onClick={() => onPage(view.page - 1)}
           >
             上一页
@@ -85,6 +86,7 @@ export function CraftInventoryPanel({
           </span>
           <InkButton
             disabled={loading || (view.page + 1) * 40 >= view.total}
+            pending={loading}
             onClick={() => onPage(view.page + 1)}
           >
             下一页
