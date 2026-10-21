@@ -3,13 +3,19 @@ import {
   ItemSlot,
 } from '@app/components/feature/items/ItemSlot';
 import { GameLoadingState } from '@app/components/game-shell';
-import { InkButton, InkInput, InkNotice, InkQuantityInput, InkSelect } from '@app/components/ui';
+import {
+  InkButton,
+  InkInput,
+  InkNotice,
+  InkQuantityInput,
+  InkSelect,
+} from '@app/components/ui';
+import { findItemDefinition } from '@daoyou/game-content/items';
+import { getGameConceptInfo } from '@daoyou/game-content/presentation/concepts';
 import {
   ITEM_EXCHANGE_CART_MAX_LINES,
   type ItemExchangeShopItemView,
 } from '@daoyou/game-domain/shops/exchange';
-import { findItemDefinition } from '@daoyou/game-content/items';
-import { getGameConceptInfo } from '@daoyou/game-content/presentation/concepts';
 import { useState } from 'react';
 import {
   affordableExchangeCount,
@@ -172,7 +178,11 @@ export function ItemExchangeShelf({
             ) : null}
           </span>
           <div className="flex items-center gap-3">
-            <InkButton disabled={pending} onClick={() => cart.clear()}>
+            <InkButton
+              disabled={pending}
+              pending={pending}
+              onClick={() => cart.clear()}
+            >
               清空选择
             </InkButton>
             <InkButton
@@ -218,7 +228,8 @@ function ExchangePreviewActions({
   const value = draft ?? String(selectedCount ?? 1);
   const shown = selectedCount ?? (Number(value) || 1);
   const amount = Number(value);
-  const valid = Number.isInteger(amount) && amount >= 1 && amount <= Math.max(max, 1);
+  const valid =
+    Number.isInteger(amount) && amount >= 1 && amount <= Math.max(max, 1);
   const adjustable = max > 1 || (selectedCount ?? 0) > 1;
   return (
     <div className="space-y-3">
@@ -262,6 +273,7 @@ function ExchangePreviewActions({
               max < 1 ||
               !valid)
         }
+        pending={pending}
         onClick={() => {
           if (selectedCount) onRemove();
           else onCount(amount);
