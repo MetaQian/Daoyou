@@ -19,6 +19,7 @@ export function BeastPickerPager({
       <InkButton
         className="shrink-0 px-0 tracking-normal"
         disabled={loading || page <= 1}
+        pending={loading}
         onClick={() => onPage(page - 1)}
       >
         上一页
@@ -29,6 +30,7 @@ export function BeastPickerPager({
       <InkButton
         className="shrink-0 px-0 tracking-normal"
         disabled={loading || page >= pages}
+        pending={loading}
         onClick={() => onPage(page + 1)}
       >
         下一页
