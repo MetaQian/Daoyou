@@ -1,7 +1,7 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkInput } from '@app/components/ui/InkInput';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useCallback, useEffect, useState } from 'react';
 
 type LoadState = {
@@ -34,8 +34,7 @@ export default function CommunityQqGroupAdminPage() {
       } catch (error) {
         if (!cancelled) {
           pushToast({
-            message:
-              error instanceof Error ? error.message : '加载配置失败',
+            message: error instanceof Error ? error.message : '加载配置失败',
             tone: 'danger',
           });
         }
@@ -68,7 +67,10 @@ export default function CommunityQqGroupAdminPage() {
       }
       setGroupNumber(data.groupNumber ?? trimmed);
       setCustomized(true);
-      pushToast({ message: '已保存，玩家端将显示新的 QQ 群号', tone: 'success' });
+      pushToast({
+        message: '已保存，玩家端将显示新的 QQ 群号',
+        tone: 'success',
+      });
       await load();
     } catch (error) {
       pushToast({
@@ -88,12 +90,13 @@ export default function CommunityQqGroupAdminPage() {
         </p>
         <h2 className="font-heading text-ink mt-2 text-3xl">QQ 交流群</h2>
         <p className="text-ink-secondary mt-3 max-w-2xl text-sm leading-7">
-          在这里维护玩家端展示的 QQ 群号。保存后即时生效，玩家页会直接读取最新配置；
+          在这里维护玩家端展示的 QQ
+          群号。保存后即时生效，玩家页会直接读取最新配置；
           若数据库没有配置，则回退为默认群号 `1107586928`。
         </p>
       </header>
 
-      <section className="border-ink/15 bg-bgpaper/90 border border-dashed p-6 space-y-4">
+      <section className="border-ink/15 bg-bgpaper/90 space-y-4 border border-dashed p-6">
         {!customized && !loading ? (
           <p className="text-ink-secondary text-sm">
             当前尚未写入数据库，玩家端显示的是代码内建默认群号。保存后即可改为后台控制。
@@ -114,6 +117,7 @@ export default function CommunityQqGroupAdminPage() {
             type="button"
             variant="primary"
             disabled={loading || saving}
+            pending={loading || saving}
             onClick={() => void submit()}
           >
             {saving ? '保存中…' : '保存'}
@@ -122,6 +126,7 @@ export default function CommunityQqGroupAdminPage() {
             type="button"
             variant="secondary"
             disabled={loading || saving}
+            pending={loading || saving}
             onClick={() => void load()}
           >
             重新加载
@@ -129,8 +134,12 @@ export default function CommunityQqGroupAdminPage() {
         </div>
 
         <div className="border-ink/20 bg-paper p-4">
-          <p className="text-ink-secondary text-xs tracking-[0.16em]">当前生效群号</p>
-          <p className="text-ink mt-2 text-2xl tracking-[0.18em]">{groupNumber || '1107586928'}</p>
+          <p className="text-ink-secondary text-xs tracking-[0.16em]">
+            当前生效群号
+          </p>
+          <p className="text-ink mt-2 text-2xl tracking-[0.18em]">
+            {groupNumber || '1107586928'}
+          </p>
         </div>
       </section>
     </div>
