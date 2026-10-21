@@ -11,16 +11,16 @@ import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
 import { InkInput } from '@app/components/ui/InkInput';
 import { InkTooltip } from '@app/components/ui/InkTooltip';
 import { SpiritStones } from '@app/components/ui/SpiritStones';
-import { getLevelRealmStage } from '@daoyou/game-domain/progression';
-import { daoEquipmentBaseRange } from '@daoyou/game-rules/equipment/forging';
 import { daoEquipmentTemplateOf } from '@daoyou/game-content/equipment/base';
 import { DAO_EQUIPMENT_FORGING } from '@daoyou/game-content/equipment/forging';
 import { DAO_WEAPONS } from '@daoyou/game-content/equipment/weapons';
 import {
   DAO_WEAPON_TYPES,
-  FORGE_INTENT_MAX_LENGTH,
   EQUIPMENT_ATTRIBUTE_NAMES,
+  FORGE_INTENT_MAX_LENGTH,
 } from '@daoyou/game-domain/equipment';
+import { getLevelRealmStage } from '@daoyou/game-domain/progression';
+import { daoEquipmentBaseRange } from '@daoyou/game-rules/equipment/forging';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useBeforeUnload, useBlocker } from 'react-router';
 import { ForgingFurnace } from './ForgingFurnace';
@@ -127,12 +127,17 @@ export function ForgingRoom() {
           <p role="alert" className="text-crimson">
             {session.error}{' '}
             {session.canRetry ? (
-              <InkButton disabled={session.pending} onClick={session.retry}>
+              <InkButton
+                disabled={session.pending}
+                pending={session.pending}
+                onClick={session.retry}
+              >
                 重试本次开炉
               </InkButton>
             ) : null}
             <InkButton
               disabled={session.pending}
+              pending={session.pending}
               onClick={() => {
                 session.reload();
               }}
@@ -156,6 +161,7 @@ export function ForgingRoom() {
               </h3>
               <InkButton
                 disabled={session.pending}
+                pending={session.pending}
                 onClick={() => setFacility('')}
               >
                 返回炼器室
@@ -168,6 +174,7 @@ export function ForgingRoom() {
                     <div className="flex justify-end">
                       <InkButton
                         disabled={session.locked}
+                        pending={session.locked}
                         onClick={() => openBag('all')}
                       >
                         选择图纸与灵材
@@ -280,8 +287,15 @@ export function ForgingRoom() {
                         <div className="space-y-1 text-xs">
                           <p>
                             {session.cost ? (
-                              <><SpiritStones amount={session.cost.spiritStones} /> · {session.cost.qi} 天地灵气</>
-                            ) : '选择图纸后确定本次消耗'}
+                              <>
+                                <SpiritStones
+                                  amount={session.cost.spiritStones}
+                                />{' '}
+                                · {session.cost.qi} 天地灵气
+                              </>
+                            ) : (
+                              '选择图纸后确定本次消耗'
+                            )}
                           </p>
                           <div className="text-ink-secondary flex items-center gap-2">
                             {session.cost
@@ -382,6 +396,7 @@ export function ForgingRoom() {
                 disabled={
                   session.locked || !!session.problem || session.intentTooLong
                 }
+                pending={session.locked}
                 onClick={() => {
                   setDrawer(undefined);
                   setSelected(undefined);
@@ -429,8 +444,10 @@ export function ForgingRoom() {
               </p>
             ))}
             <p>
-              {session.cost && <SpiritStones amount={session.cost.spiritStones} />} ·{' '}
-              {session.cost?.qi} 天地灵气
+              {session.cost && (
+                <SpiritStones amount={session.cost.spiritStones} />
+              )}{' '}
+              · {session.cost?.qi} 天地灵气
             </p>
           </div>
         </InkModal>
