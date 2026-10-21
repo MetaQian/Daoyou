@@ -1,9 +1,9 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui/InkButton';
+import { apiFetch } from '@app/lib/api/fetch';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
-import type { SectV6Action } from '@daoyou/game-domain/sects/commands';
 import type { SectV6View } from '@daoyou/contracts/sects/combat';
+import type { SectV6Action } from '@daoyou/game-domain/sects/commands';
 import { sectSkillCatalog } from '@daoyou/game-rules/sects/presentation';
 import { useEffect, useRef, useState } from 'react';
 import { combatV6Request, mutationBody } from '../combat-v6/request';
@@ -102,7 +102,7 @@ export function SectWorkspace({
       ) : !view.progress ? (
         <>
           <p>{view.blockedReason}</p>
-          <InkButton disabled={pending} onClick={onExit}>
+          <InkButton disabled={pending} pending={pending} onClick={onExit}>
             返回
           </InkButton>
         </>
@@ -122,7 +122,11 @@ export function SectWorkspace({
           ) : (
             <>
               <div className="flex justify-end">
-                <InkButton disabled={pending} onClick={onExit}>
+                <InkButton
+                  disabled={pending}
+                  pending={pending}
+                  onClick={onExit}
+                >
                   返回
                 </InkButton>
               </div>
