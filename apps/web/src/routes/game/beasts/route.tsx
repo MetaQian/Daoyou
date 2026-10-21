@@ -227,16 +227,25 @@ export default function BeastsPage() {
               </span>
             </span>
             <span className="flex flex-wrap items-center justify-end gap-1">
-              <InkButton disabled={pending} href="/game/beasts/codex">
+              <InkButton
+                disabled={pending}
+                pending={pending}
+                href="/game/beasts/codex"
+              >
                 灵兽图鉴
               </InkButton>
               <InkButton
                 disabled={pending || !ownerId}
+                pending={pending}
                 onClick={() => openFusion(detail?.id)}
               >
                 融合
               </InkButton>
-              <InkButton disabled={pending} href="/game/beasts/warehouse">
+              <InkButton
+                disabled={pending}
+                pending={pending}
+                href="/game/beasts/warehouse"
+              >
                 仓库
               </InkButton>
             </span>
@@ -254,6 +263,7 @@ export default function BeastsPage() {
                   <InkButton
                     key={species.id}
                     disabled={pending || bagBeasts.length >= BEAST_BAG_CAPACITY}
+                    pending={pending}
                     onClick={() => setClaimId(species.id)}
                   >
                     <BeastIcon speciesId={species.id} /> {species.name}
