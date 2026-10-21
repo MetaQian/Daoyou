@@ -66,7 +66,17 @@ export function InkButton({
   type = 'button',
 }: InkButtonProps) {
   const unavailable = Boolean(disabled || pending);
-  const content = pending ? pendingLabel : children;
+  const content = pending ? (
+    <span className="inline-flex items-center gap-1.5">
+      <span
+        className="h-1.5 w-1.5 animate-pulse rounded-full bg-current"
+        aria-hidden="true"
+      />
+      {pendingLabel}
+    </span>
+  ) : (
+    children
+  );
   const combinedClass = cn(
     inkButtonVariants({ variant, disabled: unavailable }),
     className,
