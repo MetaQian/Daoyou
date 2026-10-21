@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { FateDetailModal } from '@app/components/feature/fates/FateDetailModal';
 import { toFateDisplayModel } from '@app/components/feature/fates/FateDisplayAdapter';
 import { FateEffectInlineList } from '@app/components/feature/fates/FateEffectInlineList';
@@ -19,6 +18,8 @@ import {
   InkTag,
 } from '@app/components/ui';
 import { ItemCard } from '@app/components/ui/ItemCard';
+import { apiFetch } from '@app/lib/api/fetch';
+import { cn } from '@app/lib/cn';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { usePlayerSession } from '@app/lib/resources/player';
 import {
@@ -26,18 +27,17 @@ import {
   type CharacterGenerationQuotaResponse,
   type GenerateCharacterResponse,
 } from '@daoyou/contracts/character-generation';
-import { cn } from '@app/lib/cn';
+import {
+  getGameConceptIcon,
+  getResourceLabel,
+} from '@daoyou/game-content/presentation/concepts';
+import type { Cultivator } from '@daoyou/game-domain/character';
 import {
   characterDisplayRows,
   formatCharacterAttributeValue as formatAttributeValue,
   formatCharacterAttributeModifier as formatModifier,
   projectCharacterDisplay,
 } from '@daoyou/game-rules/character/display';
-import {
-  getGameConceptIcon,
-  getResourceLabel,
-} from '@daoyou/game-content/presentation/concepts';
-import type { Cultivator } from '@daoyou/game-domain/character';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -459,7 +459,10 @@ export default function CreatePage() {
                 </div>
 
                 {isGeneratingFates ? (
-                  <GameLoadingState message="正在生成先天气运……" variant="inline" />
+                  <GameLoadingState
+                    message="正在生成先天气运……"
+                    variant="inline"
+                  />
                 ) : availableFates.length > 0 ? (
                   <InkList>
                     {availableFates.map((fate, idx) => {
@@ -709,9 +712,7 @@ export default function CreatePage() {
               </div>
               <div className="text-ink mt-3 space-y-3 text-sm leading-7">
                 <p>先以一句心念描出真身，再从天机推演出的命格中择三而取。</p>
-                <p>
-                  生成结果会展示根基属性与灵根，确认无误后再正式入世。
-                </p>
+                <p>生成结果会展示根基属性与灵根，确认无误后再正式入世。</p>
               </div>
             </section>
           )}
