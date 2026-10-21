@@ -6,15 +6,15 @@ import { GameSceneFrame } from '@app/components/game-shell';
 import { GameIcon } from '@app/components/ui/GameIcon';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkTooltip } from '@app/components/ui/InkTooltip';
+import type { RealmType } from '@daoyou/constants/realms';
 import type { TowerView } from '@daoyou/contracts/combat/tower';
+import { getTowerBlessingDefinition } from '@daoyou/game-content/tower';
 import type {
   TowerBlessingId,
-  TowerLeaderboardEntry,
   TowerEnemyPreview,
+  TowerLeaderboardEntry,
 } from '@daoyou/game-domain/tower';
-import { getTowerBlessingDefinition } from '@daoyou/game-content/tower';
 import { TOWER_MIN_REALM } from '@daoyou/game-rules/tower';
-import type { RealmType } from '@daoyou/constants/realms';
 import { useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router';
 import { TowerLeaderboard } from './components/TowerLeaderboard';
@@ -240,6 +240,7 @@ export default function TowerRoute() {
           {error}{' '}
           <InkButton
             disabled={pending}
+            pending={pending}
             onClick={() =>
               void run(() => combatV6Request<TowerView>('/api/tower/state'))
             }
@@ -322,6 +323,7 @@ export default function TowerRoute() {
                           <InkButton
                             variant="primary"
                             disabled={pending}
+                            pending={pending}
                             onClick={() => void act('blessing', choice.id)}
                           >
                             {choice.name}{' '}
