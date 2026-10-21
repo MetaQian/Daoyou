@@ -99,6 +99,7 @@ export function ForgingFurnace({
                 ? (close) => (
                     <InkButton
                       disabled={session.locked}
+                      pending={session.locked}
                       onClick={() => {
                         close();
                         action();
