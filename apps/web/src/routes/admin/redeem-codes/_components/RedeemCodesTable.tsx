@@ -1,6 +1,6 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput, InkNotice, InkSelect } from '@app/components/ui';
+import { apiFetch } from '@app/lib/api/fetch';
 import { MailAttachmentsSchema } from '@daoyou/game-rules/mail';
 import { useEffect, useState } from 'react';
 import { AdminDialog } from '../../_components/AdminDialog';
@@ -215,6 +215,7 @@ export function RedeemCodesTable() {
         <div className="flex items-center justify-between">
           <InkButton
             disabled={loading || currentPage <= 1}
+            pending={loading}
             onClick={() => setPage(currentPage - 1)}
           >
             上一页
@@ -224,6 +225,7 @@ export function RedeemCodesTable() {
           </span>
           <InkButton
             disabled={loading || currentPage >= totalPages}
+            pending={loading}
             onClick={() => setPage(currentPage + 1)}
           >
             下一页
@@ -242,6 +244,7 @@ export function RedeemCodesTable() {
             <>
               <InkButton
                 disabled={pending}
+                pending={pending}
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(selected.code);
