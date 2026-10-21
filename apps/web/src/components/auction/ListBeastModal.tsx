@@ -1,7 +1,7 @@
 import { BeastPickerPager } from '@app/components/feature/beasts/beastPicker';
-import { useBeastPicker } from '@app/components/feature/beasts/useBeastPicker';
 import { BeastTradeCard } from '@app/components/feature/beasts/BeastTradeCard';
 import { BeastTradeDetails } from '@app/components/feature/beasts/BeastTradePreview';
+import { useBeastPicker } from '@app/components/feature/beasts/useBeastPicker';
 import { InkModal } from '@app/components/layout';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput, InkNotice, InkSelect } from '@app/components/ui';
@@ -139,6 +139,7 @@ export function ListBeastModal({
               </p>
               <InkButton
                 disabled={busy}
+                pending={busy}
                 onClick={() => {
                   setError('');
                   picker.reload();
@@ -188,7 +189,11 @@ export function ListBeastModal({
           </>
         ) : (
           <>
-            <InkButton disabled={busy} onClick={() => setSelected(undefined)}>
+            <InkButton
+              disabled={busy}
+              pending={busy}
+              onClick={() => setSelected(undefined)}
+            >
               重选灵兽
             </InkButton>
             <BeastTradeDetails beast={beast} />
@@ -207,8 +212,7 @@ export function ListBeastModal({
               disabled={busy}
             />
             <p className="text-ink-secondary text-xs">
-              单价上限{' '}
-              <SpiritStones amount={AUCTION_MAX_UNIT_PRICE} />
+              单价上限 <SpiritStones amount={AUCTION_MAX_UNIT_PRICE} />
             </p>
             <InkSelect
               label="寄售范围"
@@ -240,16 +244,14 @@ export function ListBeastModal({
               </>
             )}
             <p>
-              预计税费{' '}
-              <SpiritStones amount={quote.feeAmount} />
-              ，实得{' '}
-              <SpiritStones amount={quote.sellerAmount} />。
+              预计税费 <SpiritStones amount={quote.feeAmount} />
+              ，实得 <SpiritStones amount={quote.sellerAmount} />。
             </p>
             <p className="text-ink-secondary text-xs">
               寄售48小时，每单一只。上架后暂离灵兽仓，成交款或退回灵兽通过邮件领取。
             </p>
             <div className="flex justify-end gap-3">
-              <InkButton disabled={busy} onClick={onClose}>
+              <InkButton disabled={busy} pending={busy} onClick={onClose}>
                 取消
               </InkButton>
               <InkButton
