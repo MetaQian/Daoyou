@@ -88,6 +88,7 @@ export function ForgingInventory({
                     ) : null}
                     <InkButton
                       disabled={session.locked || !!problem}
+                      pending={session.locked}
                       onClick={() => {
                         onChoose(item);
                         close();
