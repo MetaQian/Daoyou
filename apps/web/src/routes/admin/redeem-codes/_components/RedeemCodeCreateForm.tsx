@@ -1,6 +1,6 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput } from '@app/components/ui';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useState } from 'react';
 import { AdminSteps } from '../../_components/AdminPage';
 import {
@@ -208,6 +208,7 @@ export function RedeemCodeCreateForm() {
       <div className="border-ink/15 flex justify-between gap-3 border-t pt-4">
         <InkButton
           disabled={loading}
+          pending={loading}
           href={step === 0 ? '/admin/redeem-codes' : undefined}
           onClick={() => {
             setError('');
