@@ -424,6 +424,7 @@ export default function InventoryV6() {
                       </InkButton>
                       <InkButton
                         disabled={pending}
+                        pending={pending}
                         onClick={() => {
                           clearSelection();
                           void bagQuery.reload();
@@ -518,6 +519,7 @@ export default function InventoryV6() {
             <div className="flex items-center justify-between text-sm">
               <InkButton
                 disabled={!data.page || pending}
+                pending={pending}
                 onClick={() => {
                   clearSelection();
                   setPage(data.page - 1);
@@ -531,6 +533,7 @@ export default function InventoryV6() {
               </span>
               <InkButton
                 disabled={(data.page + 1) * 40 >= data.total || pending}
+                pending={pending}
                 onClick={() => {
                   clearSelection();
                   setPage(data.page + 1);
@@ -588,6 +591,7 @@ function ItemActions({
       ) : null}
       <InkButton
         disabled={pending || item.equipped}
+        pending={pending}
         onClick={() =>
           void act({
             action: 'transfer',
@@ -598,7 +602,11 @@ function ItemActions({
       >
         {item.location === 'bag' ? '存入' : '取出'}
       </InkButton>
-      <InkButton disabled={pending || item.equipped} onClick={onDiscard}>
+      <InkButton
+        disabled={pending || item.equipped}
+        pending={pending}
+        onClick={onDiscard}
+      >
         丢弃
       </InkButton>
     </div>
