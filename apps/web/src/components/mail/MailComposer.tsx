@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { InventoryHeader } from '@app/components/feature/items/InventoryHeader';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
 import { ItemSlot } from '@app/components/feature/items/ItemSlot';
@@ -12,17 +11,18 @@ import {
   InkSelect,
 } from '@app/components/ui';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { useResourceMutation } from '@app/lib/resources/mutations';
 import { useCultivatorIdentity } from '@app/lib/resources/player';
 import type { FriendCultivatorSummary } from '@daoyou/contracts/friends';
 import type { InventoryView } from '@daoyou/contracts/inventory';
+import { SendMailSchema } from '@daoyou/contracts/mail';
 import { mailGiftBlockReason } from '@daoyou/game-rules/mail';
 import {
   hasReachedLateQiRefining,
   LATE_QI_FRIEND_GIFT_DENIED,
 } from '@daoyou/game-rules/progression/realm-access';
-import { SendMailSchema } from '@daoyou/contracts/mail';
 import { useRef, useState } from 'react';
 
 export function MailComposer({
@@ -72,7 +72,11 @@ export function MailComposer({
     setBagOpen(false);
   }
   async function send() {
-    if (pending.current || bagUnavailable || (giftOpen && selectedRef && !selected))
+    if (
+      pending.current ||
+      bagUnavailable ||
+      (giftOpen && selectedRef && !selected)
+    )
       return;
     if (selected && !giftOpen) {
       pushToast({ message: LATE_QI_FRIEND_GIFT_DENIED, tone: 'warning' });
@@ -131,6 +135,7 @@ export function MailComposer({
         actions={
           <InkButton
             disabled={busy || bagQuery.isRefreshing}
+            pending={busy}
             onClick={() => void refresh()}
           >
             刷新
@@ -156,6 +161,7 @@ export function MailComposer({
                     disabled={
                       busy || bagUnavailable || !!mailGiftBlockReason(item)
                     }
+                    pending={busy}
                     onClick={() => {
                       choose(item);
                       close();
@@ -230,6 +236,7 @@ export function MailComposer({
                     {(close) => (
                       <InkButton
                         disabled={busy || bagUnavailable}
+                        pending={busy}
                         onClick={() => {
                           setSelected(undefined);
                           close();
@@ -257,6 +264,7 @@ export function MailComposer({
               {selectedRef && (
                 <InkButton
                   disabled={busy || bagUnavailable}
+                  pending={busy}
                   onClick={() => setSelected(undefined)}
                 >
                   移出附件
@@ -273,7 +281,7 @@ export function MailComposer({
           )}
           <p className="text-ink-secondary text-xs">发送消耗一张空白传音符</p>
           <div className="flex justify-end gap-3">
-            <InkButton disabled={busy} onClick={onClose}>
+            <InkButton disabled={busy} pending={busy} onClick={onClose}>
               取消
             </InkButton>
             <InkButton
