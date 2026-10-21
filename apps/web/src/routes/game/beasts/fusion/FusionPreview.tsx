@@ -44,7 +44,7 @@ export function FusionPreview({
             </p>
           )}
           <div className="flex flex-wrap justify-end gap-2">
-            <InkButton disabled={pending} onClick={onClose}>
+            <InkButton disabled={pending} pending={pending} onClick={onClose}>
               再想想
             </InkButton>
             <InkButton
