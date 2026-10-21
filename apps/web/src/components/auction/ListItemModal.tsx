@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { InventoryHeader } from '@app/components/feature/items/InventoryHeader';
 import { InventoryItems } from '@app/components/feature/items/InventoryItems';
 import { ItemSlot } from '@app/components/feature/items/ItemSlot';
@@ -13,17 +12,18 @@ import {
 } from '@app/components/ui';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
 import { SpiritStones } from '@app/components/ui/SpiritStones';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { useResourceMutation } from '@app/lib/resources/mutations';
-import {
-  calculateAuctionSettlement,
-  auctionBlockReason,
-  auctionItemPriceCap,
-  auctionListingStackLimit,
-} from '@daoyou/game-rules/auction';
 import { AuctionListSchema } from '@daoyou/contracts/auction';
 import type { FriendCultivatorSummary } from '@daoyou/contracts/friends';
 import type { InventoryView } from '@daoyou/contracts/inventory';
+import {
+  auctionBlockReason,
+  auctionItemPriceCap,
+  auctionListingStackLimit,
+  calculateAuctionSettlement,
+} from '@daoyou/game-rules/auction';
 import { useEffect, useRef, useState } from 'react';
 
 export function ListItemModal({
@@ -146,6 +146,7 @@ export function ListItemModal({
         actions={
           <InkButton
             disabled={busy || bagQuery.isRefreshing}
+            pending={busy}
             onClick={() => void refresh()}
           >
             刷新
@@ -173,6 +174,7 @@ export function ListItemModal({
                     disabled={
                       busy || bagUnavailable || !!auctionBlockReason(item)
                     }
+                    pending={busy}
                     onClick={() => {
                       choose(item);
                       close();
@@ -213,6 +215,7 @@ export function ListItemModal({
                 {(close) => (
                   <InkButton
                     disabled={busy || bagUnavailable}
+                    pending={busy}
                     onClick={() => {
                       setSelected(undefined);
                       close();
@@ -240,6 +243,7 @@ export function ListItemModal({
           {selectedRef ? (
             <InkButton
               disabled={busy || bagUnavailable}
+              pending={busy}
               onClick={() => setSelected(undefined)}
             >
               移出物品
@@ -259,8 +263,7 @@ export function ListItemModal({
           />
           {selected ? (
             <p className="text-ink-secondary text-xs">
-              单价上限{' '}
-              <SpiritStones amount={auctionItemPriceCap(selected)} />
+              单价上限 <SpiritStones amount={auctionItemPriceCap(selected)} />
             </p>
           ) : null}
           <InkSelect
@@ -294,16 +297,15 @@ export function ListItemModal({
             </>
           ) : null}
           <p className="text-ink-secondary text-sm">
-            按本次数量整批成交预计税费{' '}
-            <SpiritStones amount={quote.feeAmount} />
-            ，实得{' '}
-            <SpiritStones amount={quote.sellerAmount} />。分次成交按每次交易计税。
+            按本次数量整批成交预计税费 <SpiritStones amount={quote.feeAmount} />
+            ，实得 <SpiritStones amount={quote.sellerAmount} />
+            。分次成交按每次交易计税。
           </p>
           <p className="text-ink-secondary text-xs">
             寄售48小时；成交款与未售物品通过邮件收取。
           </p>
           <div className="flex justify-end gap-3">
-            <InkButton disabled={busy} onClick={onClose}>
+            <InkButton disabled={busy} pending={busy} onClick={onClose}>
               取消
             </InkButton>
             <InkButton
