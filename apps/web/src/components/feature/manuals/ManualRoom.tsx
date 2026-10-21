@@ -1,25 +1,25 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { GameImage } from '@app/components/ui/GameImage';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { useCultivatorIdentity } from '@app/lib/resources/player';
-import type {
-  ManualAction,
-  CharacterManualDefV1,
-} from '@daoyou/game-domain/manuals';
-import type { ManualView } from '@daoyou/contracts/manuals';
 import type { InventoryView } from '@daoyou/contracts/inventory';
-import {
-  manualAttributeValue,
-  getManualSlotCount,
-  MAX_MANUALS_PER_SLOT,
-} from '@daoyou/game-rules/manuals/projection';
+import type { ManualView } from '@daoyou/contracts/manuals';
 import { CHARACTER_MANUALS_V1 } from '@daoyou/game-content/manuals';
+import { CHARACTER_ATTRIBUTE_LABELS } from '@daoyou/game-domain/character';
+import type {
+  CharacterManualDefV1,
+  ManualAction,
+} from '@daoyou/game-domain/manuals';
 import { MANUAL_REALMS } from '@daoyou/game-domain/manuals/authoring';
 import { itemDefinition } from '@daoyou/game-rules/inventory';
-import { CHARACTER_ATTRIBUTE_LABELS } from '@daoyou/game-domain/character';
+import {
+  getManualSlotCount,
+  manualAttributeValue,
+  MAX_MANUALS_PER_SLOT,
+} from '@daoyou/game-rules/manuals/projection';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'react-router';
 import { combatV6Request, mutationBody } from '../combat-v6/request';
@@ -191,6 +191,7 @@ export function ManualRoom() {
           {error}
           <InkButton
             disabled={pending}
+            pending={pending}
             onClick={() => setRefresh((n) => n + 1)}
           >
             刷新重试
@@ -312,6 +313,7 @@ export function ManualRoom() {
                       !!view.blockedReason ||
                       !view.state
                     }
+                    pending={pending}
                     onClick={() => setDrawer('picker')}
                     className="min-h-11 text-sm"
                   >
