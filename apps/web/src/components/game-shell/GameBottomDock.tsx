@@ -34,7 +34,12 @@ function DockLink({
         {shouldShowGameDockBadge(badge) ? (
           <span className="absolute -top-1 -right-1.5 flex h-3 w-3">
             <span className="bg-crimson absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-            <span className={cn('relative inline-flex h-3 w-3 rounded-full', active ? 'bg-paper' : 'bg-crimson')} />
+            <span
+              className={cn(
+                'relative inline-flex h-3 w-3 rounded-full',
+                active ? 'bg-paper' : 'bg-crimson',
+              )}
+            />
           </span>
         ) : null}
       </span>
@@ -87,7 +92,7 @@ export function GameBottomDock({
           <button
             type="button"
             onClick={onToggleExpanded}
-            className="hover:border-ink/40 hover:bg-ink/5 shrink-0 rounded-[2px] border border-transparent px-3 py-1.5 leading-5 tracking-[0.08em] whitespace-nowrap text-ink transition-colors duration-150"
+            className="hover:border-ink/40 hover:bg-ink/5 text-ink shrink-0 rounded-[2px] border border-transparent px-3 py-1.5 leading-5 tracking-[0.08em] whitespace-nowrap transition-colors duration-150"
           >
             {drawerOpen ? '收起' : '展开'}
           </button>
@@ -126,7 +131,7 @@ export function GameBottomDock({
                           dockMode === 'expanded' ? undefined : onToggleExpanded
                         }
                         className={cn(
-                          'inline-flex min-w-0 items-center justify-center rounded-[2px] border px-2.5 py-1 leading-6 whitespace-nowrap no-underline text-center transition-colors duration-150',
+                          'inline-flex min-w-0 items-center justify-center rounded-[2px] border px-2.5 py-1 text-center leading-6 whitespace-nowrap no-underline transition-colors duration-150',
                           sceneId === action.id
                             ? 'border-crimson bg-crimson text-paper'
                             : 'border-ink/25 bg-paper-2/50 text-ink hover:border-crimson/50 hover:text-crimson',
