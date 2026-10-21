@@ -1,7 +1,12 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { InkButton } from '@app/components/ui/InkButton';
+import { apiFetch } from '@app/lib/api/fetch';
 import { autoStatusChoices } from '@daoyou/game-content/combat/auto-status-options';
-import { MAX_AUTO_STRATEGY_RULES, SaveAutoStrategySchema, type AutoComparison, type AutoStrategy } from '@daoyou/game-domain/combat/auto';
+import {
+  MAX_AUTO_STRATEGY_RULES,
+  SaveAutoStrategySchema,
+  type AutoComparison,
+  type AutoStrategy,
+} from '@daoyou/game-domain/combat/auto';
 import { autoComparison } from '@daoyou/game-rules/combat/auto';
 import { useEffect, useState } from 'react';
 import { SettingsMessage } from './SettingsFields';
@@ -164,7 +169,10 @@ async function request(
     data?: View;
   };
   if (!response.ok || !payload.success || !payload.data)
-    throw new Error(payload.error ?? `暂时无法${method === 'GET' ? '读取' : '保存'}自动战术，请稍后重试。`);
+    throw new Error(
+      payload.error ??
+        `暂时无法${method === 'GET' ? '读取' : '保存'}自动战术，请稍后重试。`,
+    );
   return payload.data;
 }
 
@@ -761,15 +769,18 @@ export function CombatAutoStrategyTab() {
                             conditions: rule.conditions.filter((condition) => {
                               if (condition.type === 'targetHpBelow')
                                 return action.type !== 'defend';
-                              if (condition.type !== 'targetStatus') return true;
-                              return action.type !== 'defend' &&
+                              if (condition.type !== 'targetStatus')
+                                return true;
+                              return (
+                                action.type !== 'defend' &&
                                 (action.type !== 'attack' ||
                                   statusChoices.target.some(
                                     (choice) =>
                                       choice.kind === condition.kind &&
                                       choice.statusId === condition.statusId &&
                                       choice.side === 'enemy',
-                                  ));
+                                  ))
+                              );
                             }),
                             target:
                               value === 'defend' ||
@@ -851,6 +862,7 @@ export function CombatAutoStrategyTab() {
                     <InkButton
                       variant="secondary"
                       disabled={busy || index === 0}
+                      pending={busy}
                       onClick={() => moveRule(index, -1)}
                     >
                       前移
@@ -858,6 +870,7 @@ export function CombatAutoStrategyTab() {
                     <InkButton
                       variant="secondary"
                       disabled={busy || index === draft.rules.length - 1}
+                      pending={busy}
                       onClick={() => moveRule(index, 1)}
                     >
                       后移
@@ -865,6 +878,7 @@ export function CombatAutoStrategyTab() {
                     <InkButton
                       variant="secondary"
                       disabled={busy}
+                      pending={busy}
                       onClick={() => {
                         setDraft({
                           ...draft,
@@ -891,6 +905,7 @@ export function CombatAutoStrategyTab() {
         <InkButton
           variant="outline"
           disabled={busy || draft.rules.length >= MAX_AUTO_STRATEGY_RULES}
+          pending={busy}
           onClick={() => {
             setDraft({
               ...draft,
@@ -908,6 +923,7 @@ export function CombatAutoStrategyTab() {
           <InkButton
             variant="secondary"
             disabled={busy}
+            pending={busy}
             onClick={() => {
               setDraft(structuredClone(saved));
               setEditingIndex(null);
@@ -929,6 +945,7 @@ export function CombatAutoStrategyTab() {
           <InkButton
             variant="secondary"
             disabled={busy}
+            pending={busy}
             onClick={() => void reset()}
           >
             恢复流派战术
