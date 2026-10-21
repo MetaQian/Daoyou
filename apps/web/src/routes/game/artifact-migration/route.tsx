@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import {
   combatV6Request,
   mutationBody,
@@ -8,20 +7,24 @@ import { GameSceneFrame } from '@app/components/game-shell/GameSceneFrame';
 import { InkModal } from '@app/components/layout/InkModal';
 import { InkButton } from '@app/components/ui/InkButton';
 import { SpiritStones } from '@app/components/ui/SpiritStones';
+import { apiFetch } from '@app/lib/api/fetch';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { usePlayerSession } from '@app/lib/resources/player';
-import type { ArtifactMigrationResult, ArtifactMigrationSource } from '@daoyou/game-domain/legacy/migrations';
 import type { ArtifactMigrationView } from '@daoyou/contracts/legacy/artifacts';
+import { DAO_WEAPONS } from '@daoyou/game-content/equipment/weapons';
+import { BLUEPRINTS } from '@daoyou/game-content/items/equipment';
 import {
   DAO_EQUIPMENT_SLOTS,
-  type DaoEquipmentSlot,
   DAO_WEAPON_TYPES,
+  type DaoEquipmentSlot,
   type DaoWeaponType,
   EQUIPMENT_SLOT_NAMES,
 } from '@daoyou/game-domain/equipment';
-import { DAO_WEAPONS } from '@daoyou/game-content/equipment/weapons';
 import type { ItemGrant } from '@daoyou/game-domain/inventory';
-import { BLUEPRINTS } from '@daoyou/game-content/items/equipment';
+import type {
+  ArtifactMigrationResult,
+  ArtifactMigrationSource,
+} from '@daoyou/game-domain/legacy/migrations';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const endpoint = '/api/artifact-migration';
@@ -127,6 +130,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
         <InkButton
           variant="secondary"
           disabled={busy}
+          pending={busy}
           onClick={() => void reload()}
         >
           刷新核对
@@ -172,6 +176,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                   </div>
                   <InkButton
                     disabled={busy || !!view.blockedReason || !!source.problem}
+                    pending={busy}
                     onClick={() => {
                       setSlot('weapon');
                       setWeaponType('sword');
@@ -196,6 +201,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
               </span>
               <InkButton
                 disabled={(currentPage + 1) * 20 >= pending.length}
+                pending={(currentPage + 1) * 20 >= pending.length}
                 onClick={() => setPage(currentPage + 1)}
               >
                 下一页
@@ -213,12 +219,14 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                 <InkButton
                   variant="secondary"
                   disabled={busy}
+                  pending={busy}
                   onClick={() => setConfirm(null)}
                 >
                   取消
                 </InkButton>
                 <InkButton
                   disabled={busy || !!view.blockedReason}
+                  pending={busy}
                   onClick={() => void submit()}
                 >
                   {busy ? '正在结算…' : '兑换并全部领取'}
@@ -236,7 +244,8 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                 </p>
                 {confirm.spiritStones > 0 && (
                   <p>
-                    神品额外赠送 <SpiritStones amount={confirm.spiritStones} />。
+                    神品额外赠送 <SpiritStones amount={confirm.spiritStones} />
+                    。
                   </p>
                 )}
                 <p className="text-ink-secondary">
@@ -336,8 +345,7 @@ function MigrationPage({ ownerId }: { ownerId: string }) {
                 </div>
                 {result.spiritStones > 0 && (
                   <p className="text-sm">
-                    额外获得 <SpiritStones amount={result.spiritStones} />
-                    。
+                    额外获得 <SpiritStones amount={result.spiritStones} />。
                   </p>
                 )}
                 <p className="text-sm">
