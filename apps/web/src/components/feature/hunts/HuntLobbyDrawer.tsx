@@ -159,6 +159,7 @@ export function HuntLobbyDrawer({
                     disabled={
                       pending || !data.open || team.status === 'starting'
                     }
+                    pending={pending}
                     onClick={() => command('ready')}
                   >
                     {self?.ready ? '取消准备' : '准备'}
@@ -172,6 +173,7 @@ export function HuntLobbyDrawer({
                           team.members.length < 2 ||
                           team.members.some((m) => !m.ready)
                         }
+                        pending={pending}
                         onClick={() => command('start')}
                       >
                         {team.status === 'starting' ? '继续出战' : '开始讨伐'}
@@ -182,6 +184,7 @@ export function HuntLobbyDrawer({
                           team.status !== 'assembling' ||
                           team.members.length >= 4
                         }
+                        pending={pending}
                         onClick={() =>
                           void act(`/api/hunts/teams/${team.id}`, {
                             type: 'recruit',
@@ -196,6 +199,7 @@ export function HuntLobbyDrawer({
                   ) : null}
                   <InkButton
                     disabled={pending || team.status === 'starting'}
+                    pending={pending}
                     onClick={() => command('leave')}
                   >
                     离开队伍
@@ -222,6 +226,7 @@ export function HuntLobbyDrawer({
                   {team.leaderId === actorId && team.status === 'assembling' ? (
                     <InkButton
                       disabled={pending}
+                      pending={pending}
                       onClick={() =>
                         void act(`/api/hunts/teams/${team.id}`, {
                           type: 'target',
@@ -291,6 +296,7 @@ export function HuntLobbyDrawer({
                       REALM_VALUES.indexOf(minRealm) >
                         REALM_VALUES.indexOf(maxRealm)
                     }
+                    pending={pending}
                   >
                     确认创建
                   </InkButton>{' '}
@@ -300,12 +306,14 @@ export function HuntLobbyDrawer({
                 <div className="flex gap-3">
                   <InkButton
                     disabled={pending}
+                    pending={pending}
                     onClick={() => setCreating(true)}
                   >
                     创建队伍
                   </InkButton>
                   <InkButton
                     disabled={pending}
+                    pending={pending}
                     onClick={() => void act(`/api/hunts/${eventId}/join`, {})}
                   >
                     快速匹配
@@ -349,6 +357,7 @@ export function HuntLobbyDrawer({
                             !identity ||
                             !huntRealmAllowed(t, identity.realm)
                           }
+                          pending={pending}
                           onClick={() =>
                             void act(`/api/hunts/${eventId}/join`, {
                               teamId: t.id,
