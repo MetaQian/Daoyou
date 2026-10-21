@@ -1,14 +1,18 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { ItemSlot } from '@app/components/feature/items/ItemSlot';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput, InkNotice, InkSelect } from '@app/components/ui';
+import { apiFetch } from '@app/lib/api/fetch';
+import type { ItemGrant } from '@daoyou/game-domain/inventory';
+import {
+  ITEM_EXCHANGE_SHOP_MAX_PRICE,
+  type ItemExchangeShopItemMutation,
+  type ItemExchangeShopItemView,
+} from '@daoyou/game-domain/shops/exchange';
 import {
   RewardItemSchema,
   rewardDisplayItem,
 } from '@daoyou/game-rules/rewards/materials';
-import { ITEM_EXCHANGE_SHOP_MAX_PRICE, type ItemExchangeShopItemMutation, type ItemExchangeShopItemView } from '@daoyou/game-domain/shops/exchange';
 import { ItemExchangeShopItemMutationSchema } from '@daoyou/game-rules/shops/exchange';
-import type { ItemGrant } from '@daoyou/game-domain/inventory';
 import { useCallback, useEffect, useState } from 'react';
 import { AdminDialog } from './AdminDialog';
 import { AdminPageHeader } from './AdminPage';
@@ -247,12 +251,17 @@ export function ItemExchangeShopAdminPage({
                   每周限购 {item.perUserLimit ?? '不限'} · 排序 {item.sortOrder}
                 </p>
                 <div className="flex gap-2">
-                  <InkButton disabled={saving} onClick={() => edit(item)}>
+                  <InkButton
+                    disabled={saving}
+                    pending={saving}
+                    onClick={() => edit(item)}
+                  >
                     {item.item ? '编辑' : '重新配置'}
                   </InkButton>
                   {item.status === 'active' && (
                     <InkButton
                       disabled={saving}
+                      pending={saving}
                       variant="secondary"
                       onClick={() => void archive(item)}
                     >
@@ -273,7 +282,11 @@ export function ItemExchangeShopAdminPage({
         title={draft.id ? '编辑商品' : '新增商品'}
         footer={
           <>
-            <InkButton disabled={saving} onClick={() => setEditorOpen(false)}>
+            <InkButton
+              disabled={saving}
+              pending={saving}
+              onClick={() => setEditorOpen(false)}
+            >
               取消
             </InkButton>
             <InkButton
