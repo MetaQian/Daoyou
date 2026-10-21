@@ -1,4 +1,3 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import {
   combatV6Request,
   mutationBody,
@@ -15,22 +14,23 @@ import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
 import { InkQuantityInput } from '@app/components/ui/InkQuantityInput';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { useCraftStorage } from '@app/lib/resources/craftStorage';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
-import { beastSkillPresentation } from '@daoyou/game-rules/beasts/presentation';
 import type { BeastPickerPage } from '@daoyou/contracts/beasts';
-import type { SummonedBeast } from '@daoyou/game-domain/beasts';
 import type { InventoryView } from '@daoyou/contracts/inventory';
+import { BEAST_REFINEMENT } from '@daoyou/game-content/beasts';
+import { BEAST_REJUVENATION } from '@daoyou/game-content/items/beasts';
+import type { SummonedBeast } from '@daoyou/game-domain/beasts';
+import { ConsumableFactsSchema } from '@daoyou/game-domain/inventory';
 import {
   beastRejuvenationReason,
   previewBeastFeeding,
 } from '@daoyou/game-rules/beasts/growth';
+import { beastSkillPresentation } from '@daoyou/game-rules/beasts/presentation';
 import { beastRefinementReason } from '@daoyou/game-rules/beasts/refinement';
-import { BEAST_REFINEMENT } from '@daoyou/game-content/beasts';
 import { itemDefinition } from '@daoyou/game-rules/inventory';
-import { BEAST_REJUVENATION } from '@daoyou/game-content/items/beasts';
-import { ConsumableFactsSchema } from '@daoyou/game-domain/inventory';
 import { useEffect, useRef, useState } from 'react';
 
 export function BeastBookDrawer({
@@ -441,6 +441,7 @@ export function BeastBookDrawer({
                             ) : (
                               <InkButton
                                 disabled={pending || unavailable}
+                                pending={pending}
                                 onClick={() => {
                                   setSelectedItem(item);
                                   setQuantity(1);
@@ -477,6 +478,7 @@ export function BeastBookDrawer({
             <InkButton
               variant="secondary"
               disabled={pending}
+              pending={pending}
               onClick={() => setConfirming(false)}
             >
               取消
