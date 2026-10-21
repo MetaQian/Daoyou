@@ -1,6 +1,6 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput, InkSelect } from '@app/components/ui';
+import { apiFetch } from '@app/lib/api/fetch';
 import { authClient } from '@app/lib/auth/client';
 import type {
   AdminAccountBanDuration,
@@ -500,12 +500,18 @@ export default function AdminAccountsPage() {
             <option value="true">已验证</option>
             <option value="false">未验证</option>
           </InkSelect>
-          <InkButton type="submit" variant="primary" disabled={loading}>
+          <InkButton
+            type="submit"
+            variant="primary"
+            disabled={loading}
+            pending={loading}
+          >
             搜索
           </InkButton>
           <InkButton
             variant="secondary"
             disabled={loading}
+            pending={loading}
             onClick={() => setRefreshKey((value) => value + 1)}
           >
             刷新
@@ -633,6 +639,7 @@ export default function AdminAccountsPage() {
                               Boolean(revokingUserId) ||
                               Boolean(moderatingUserId)
                             }
+                            pending={saving}
                             onClick={() => beginEmailChange(account)}
                           >
                             改绑邮箱
@@ -723,12 +730,14 @@ export default function AdminAccountsPage() {
                                 type="submit"
                                 variant="primary"
                                 disabled={saving}
+                                pending={saving}
                               >
                                 {saving ? '改绑中...' : '确认改绑并下线'}
                               </InkButton>
                               <InkButton
                                 variant="secondary"
                                 disabled={saving}
+                                pending={saving}
                                 onClick={resetEmailForm}
                               >
                                 取消
@@ -824,6 +833,7 @@ export default function AdminAccountsPage() {
             <InkButton
               variant="secondary"
               disabled={loading || page <= 1}
+              pending={loading}
               onClick={() => setPage((value) => Math.max(1, value - 1))}
             >
               上一页
@@ -831,6 +841,7 @@ export default function AdminAccountsPage() {
             <InkButton
               variant="secondary"
               disabled={loading || page >= totalPages}
+              pending={loading}
               onClick={() =>
                 setPage((value) => Math.min(totalPages, value + 1))
               }
