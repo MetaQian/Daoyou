@@ -1,24 +1,27 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import {
   InventoryGrid,
   ItemSlot,
 } from '@app/components/feature/items/ItemSlot';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput, InkNotice, InkSelect } from '@app/components/ui';
+import { apiFetch } from '@app/lib/api/fetch';
+import { ELEMENT_VALUES } from '@daoyou/constants/elements';
+import { QUALITY_VALUES } from '@daoyou/constants/qualities';
 import {
-  rewardDisplayItem,
-  libraryMaterialGrant,
-} from '@daoyou/game-rules/rewards/materials';
+  DEFAULT_ITEM_LIBRARY_DAILY_MATERIAL_GENERATION_SETTINGS,
+  type ItemLibraryDailyMaterialGenerationSettings,
+} from '@daoyou/contracts/application-settings';
+import type { CreateItemLibraryEntry } from '@daoyou/contracts/items/library';
 import {
   INVENTORY_MATERIAL_TYPES,
   MATERIAL_TYPE_NAMES,
   MATERIAL_TYPE_VALUES,
 } from '@daoyou/game-domain/inventory';
-import { DEFAULT_ITEM_LIBRARY_DAILY_MATERIAL_GENERATION_SETTINGS, type ItemLibraryDailyMaterialGenerationSettings } from '@daoyou/contracts/application-settings';
-import type { CreateItemLibraryEntry } from '@daoyou/contracts/items/library';
 import type { ItemLibraryEntry } from '@daoyou/game-domain/items/catalog';
-import { ELEMENT_VALUES } from '@daoyou/constants/elements';
-import { QUALITY_VALUES } from '@daoyou/constants/qualities';
+import {
+  libraryMaterialGrant,
+  rewardDisplayItem,
+} from '@daoyou/game-rules/rewards/materials';
 import { useCallback, useEffect, useState } from 'react';
 import { AdminDialog } from '../_components/AdminDialog';
 import { AdminPageHeader } from '../_components/AdminPage';
@@ -288,16 +291,19 @@ export default function ItemLibraryAdminPage() {
     setDialogError('');
     setSaving(true);
     try {
-      const response = await apiFetch('/api/admin/item-library/seeds/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          count,
-          quality: seedGenerateQuality,
-          element: seedGenerateElement || undefined,
-          status: 'published',
-        }),
-      });
+      const response = await apiFetch(
+        '/api/admin/item-library/seeds/generate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            count,
+            quality: seedGenerateQuality,
+            element: seedGenerateElement || undefined,
+            status: 'published',
+          }),
+        },
+      );
       const data = (await response.json()) as ItemLibraryResponse;
       if (!response.ok) {
         throw new Error(data.error ?? '批量生成灵种失败');
@@ -465,6 +471,7 @@ export default function ItemLibraryAdminPage() {
       <div className="border-ink/10 flex items-center justify-between border-t pt-3">
         <InkButton
           disabled={loading || page <= 1}
+          pending={loading}
           onClick={() => setPage((p) => p - 1)}
         >
           上一页
@@ -474,6 +481,7 @@ export default function ItemLibraryAdminPage() {
         </span>
         <InkButton
           disabled={loading || page >= totalPages}
+          pending={loading}
           onClick={() => setPage((p) => p + 1)}
         >
           下一页
@@ -490,13 +498,18 @@ export default function ItemLibraryAdminPage() {
             {draft.rowId && draft.status !== 'archived' && (
               <InkButton
                 disabled={saving}
+                pending={saving}
                 className="mr-auto"
                 onClick={() => void archive()}
               >
                 归档材料
               </InkButton>
             )}
-            <InkButton disabled={saving} onClick={() => openPanel(null)}>
+            <InkButton
+              disabled={saving}
+              pending={saving}
+              onClick={() => openPanel(null)}
+            >
               取消
             </InkButton>
             <InkButton
@@ -599,7 +612,11 @@ export default function ItemLibraryAdminPage() {
         title="批量生成"
         footer={
           <>
-            <InkButton disabled={saving} onClick={() => openPanel(null)}>
+            <InkButton
+              disabled={saving}
+              pending={saving}
+              onClick={() => openPanel(null)}
+            >
               取消
             </InkButton>
             <InkButton
