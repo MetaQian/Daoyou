@@ -63,6 +63,7 @@ export function FusionBeastPanel({
               <div className="my-2 flex flex-wrap justify-center gap-1">
                 <InkButton
                   disabled={locked}
+                  pending={locked}
                   onClick={onSelect}
                   className="min-h-11 text-sm"
                 >
@@ -70,6 +71,7 @@ export function FusionBeastPanel({
                 </InkButton>
                 <InkButton
                   disabled={locked}
+                  pending={locked}
                   onClick={onRemove}
                   variant="ghost"
                   className="min-h-11 text-sm"
