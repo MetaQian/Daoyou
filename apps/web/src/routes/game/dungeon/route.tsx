@@ -59,7 +59,11 @@ function DungeonContent() {
       {readError ? (
         <div className="mx-auto w-full max-w-3xl p-4" role="alert">
           <InkNotice tone="warning">{readError}</InkNotice>
-          <InkButton disabled={refreshing} onClick={() => void refresh()}>
+          <InkButton
+            disabled={refreshing}
+            pending={refreshing}
+            onClick={() => void refresh()}
+          >
             {refreshing ? '正在确认探索结果…' : '重新读取'}
           </InkButton>
         </div>
