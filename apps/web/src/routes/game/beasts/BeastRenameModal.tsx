@@ -29,7 +29,12 @@ export function BeastRenameModal({
       }}
       footer={
         <div className="flex justify-end gap-3">
-          <InkButton variant="secondary" disabled={pending} onClick={close}>
+          <InkButton
+            variant="secondary"
+            disabled={pending}
+            pending={pending}
+            onClick={close}
+          >
             取消
           </InkButton>
           <InkButton
