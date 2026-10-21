@@ -118,6 +118,7 @@ function NarrativeActPanel({
           <InkButton
             onClick={onRewind}
             disabled={busy}
+            pending={busy}
             className="text-[#d9cfba] hover:text-white"
           >
             上一幕
@@ -148,6 +149,7 @@ function NarrativeActPanel({
               <InkButton
                 onClick={onBack}
                 disabled={busy}
+                pending={busy}
                 className="text-[#d9cfba] hover:text-white"
               >
                 {finalExitLabel}
@@ -220,6 +222,7 @@ export function NarrativePerformanceStage({
             <InkButton
               onClick={onBack}
               disabled={busy}
+              pending={busy}
               className="text-[#e7dcc3] hover:text-white"
             >
               {exitLabel}
