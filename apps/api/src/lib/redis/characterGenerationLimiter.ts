@@ -5,11 +5,20 @@ import {
   type CharacterGenerationLimitedBy,
   type CharacterGenerationQuota,
 } from '@daoyou/contracts/character-generation';
+import { getRuntimeEnvironment } from '@server/lib/config/environment.js';
 import { redis } from './index.js';
 
 const KEY_PREFIX = 'character_generation:daily';
 const KEY_TTL_SECONDS = 86400;
 const RESET_TIMEZONE = 'Asia/Shanghai';
+
+// 每日推演次数上限：env 可配（CHARACTER_GENERATION_DAILY_LIMIT），默认沿用共享包常量 6
+export function characterGenerationDailyLimit(): number {
+  const configured = getRuntimeEnvironment().CHARACTER_GENERATION_DAILY_LIMIT;
+  return /^\d+$/.test(configured) && Number(configured) > 0
+    ? Number(configured)
+    : CHARACTER_GENERATION_DAILY_LIMIT;
+}
 
 const CONSUME_QUOTA_SCRIPT = `
 local emailKey = KEYS[1]
@@ -108,16 +117,14 @@ function buildQuota(params: {
   ipUsed: number;
   ipTracked: boolean;
 }): CharacterGenerationQuota {
-  const remainingByEmail = Math.max(
-    0,
-    CHARACTER_GENERATION_DAILY_LIMIT - params.emailUsed,
-  );
+  const limit = characterGenerationDailyLimit();
+  const remainingByEmail = Math.max(0, limit - params.emailUsed);
   const remainingByIp = params.ipTracked
-    ? Math.max(0, CHARACTER_GENERATION_DAILY_LIMIT - params.ipUsed)
-    : CHARACTER_GENERATION_DAILY_LIMIT;
+    ? Math.max(0, limit - params.ipUsed)
+    : limit;
 
   return {
-    dailyLimit: CHARACTER_GENERATION_DAILY_LIMIT,
+    dailyLimit: limit,
     remaining: Math.min(remainingByEmail, remainingByIp),
     remainingByEmail,
     remainingByIp,
@@ -176,7 +183,7 @@ export async function consumeCharacterGenerationQuota(params: {
     2,
     emailKey,
     ipKey,
-    CHARACTER_GENERATION_DAILY_LIMIT,
+    characterGenerationDailyLimit(),
     KEY_TTL_SECONDS,
     ip ? 1 : 0,
   )) as unknown[];
