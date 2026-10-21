@@ -7,12 +7,12 @@ import {
   InkNotice,
   inkFieldVariants,
 } from '@app/components/ui';
-import { formatAlchemyPropertyVector } from '@daoyou/game-rules/alchemy';
 import {
   PILL_FAMILY_VALUES,
   type AlchemyFormula,
   type PillFamily,
 } from '@daoyou/game-domain/consumables';
+import { formatAlchemyPropertyVector } from '@daoyou/game-rules/alchemy';
 import { useAlchemyFormulaLibrary } from './useAlchemyFormulaLibrary';
 
 export function FormulaPickerModal({
@@ -76,10 +76,7 @@ export function FormulaPickerModal({
         ) : null}
 
         {library.loading && library.formulas.length === 0 ? (
-          <GameLoadingState
-            variant="inline"
-            message="正在读取丹方……"
-          />
+          <GameLoadingState variant="inline" message="正在读取丹方……" />
         ) : null}
 
         {library.formulas.length ? (
@@ -161,6 +158,7 @@ export function FormulaPickerModal({
           <InkButton
             variant="secondary"
             disabled={!library.pagination.hasPreviousPage || library.loading}
+            pending={library.loading}
             onClick={() => library.setPage(library.page - 1)}
           >
             上一页
@@ -172,6 +170,7 @@ export function FormulaPickerModal({
           <InkButton
             variant="secondary"
             disabled={!library.pagination.hasNextPage || library.loading}
+            pending={library.loading}
             onClick={() => library.setPage(library.page + 1)}
           >
             下一页
