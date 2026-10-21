@@ -215,6 +215,7 @@ export default function HuntTeamPage() {
             <div className="flex flex-wrap gap-x-3 gap-y-1">
               <InkButton
                 disabled={pending || team.status !== 'assembling'}
+                pending={pending}
                 onClick={() => command('ready')}
               >
                 {self?.ready ? '取消准备' : '准备'}
@@ -228,6 +229,7 @@ export default function HuntTeamPage() {
                       team.members.length < 2 ||
                       team.members.some((member) => !member.ready)
                     }
+                    pending={pending}
                     onClick={() => command('start')}
                   >
                     {team.status === 'starting' ? '继续出战' : '开始讨伐'}
@@ -238,6 +240,7 @@ export default function HuntTeamPage() {
                       team.status !== 'assembling' ||
                       team.members.length >= 4
                     }
+                    pending={pending}
                     onClick={() =>
                       void act(`/api/hunts/teams/${team.id}`, {
                         type: 'recruit',
@@ -252,6 +255,7 @@ export default function HuntTeamPage() {
               ) : null}
               <InkButton
                 disabled={pending || team.status === 'starting'}
+                pending={pending}
                 onClick={() => command('leave')}
               >
                 离开队伍
