@@ -1,8 +1,8 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { GameIcon } from '@app/components/ui/GameIcon';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkNotice } from '@app/components/ui/InkNotice';
 import { InkSelect } from '@app/components/ui/InkSelect';
+import { apiFetch } from '@app/lib/api/fetch';
 import type { AdminTowerView } from '@daoyou/contracts/admin/tower';
 import {
   TOWER_ELIGIBLE_REALMS,
@@ -45,10 +45,13 @@ export default function TowerEnemySetsRoute() {
     if (seasonKey) query.set('seasonKey', seasonKey);
     void (async () => {
       try {
-        const response = await apiFetch(`/api/admin/tower-enemy-sets?${query}`, {
-          signal: controller.signal,
-          cache: 'no-store',
-        });
+        const response = await apiFetch(
+          `/api/admin/tower-enemy-sets?${query}`,
+          {
+            signal: controller.signal,
+            cache: 'no-store',
+          },
+        );
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error ?? '加载蜃楼配置失败');
         if (!controller.signal.aborted) setData(payload.data);
@@ -77,14 +80,17 @@ export default function TowerEnemySetsRoute() {
     setError('');
     setMessage('');
     try {
-      const response = await apiFetch('/api/admin/tower-enemy-sets/regenerate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          seasonKey: data.seasonKey,
-          expectedFingerprint: data.fingerprint,
-        }),
-      });
+      const response = await apiFetch(
+        '/api/admin/tower-enemy-sets/regenerate',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            seasonKey: data.seasonKey,
+            expectedFingerprint: data.fingerprint,
+          }),
+        },
+      );
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? '重新生成失败');
       setMessage('周配置已重新生成并发布。相同生成条件下，阵容可能保持一致。');
@@ -203,6 +209,7 @@ export default function TowerEnemySetsRoute() {
         <InkButton
           variant="secondary"
           disabled={loading || publishing}
+          pending={loading || publishing}
           onClick={() => {
             beginLoad();
             setRefresh((value) => value + 1);
@@ -213,6 +220,7 @@ export default function TowerEnemySetsRoute() {
         {canPublish && (
           <InkButton
             disabled={loading || publishing}
+            pending={loading || publishing}
             onClick={() => setConfirming(true)}
           >
             {publishing
@@ -233,12 +241,17 @@ export default function TowerEnemySetsRoute() {
             沿用现有确定性生成规则，相同周次、内容版本和历史配置可能生成相同阵容。
           </p>
           <div className="mt-3 flex gap-3">
-            <InkButton disabled={publishing} onClick={() => void regenerate()}>
+            <InkButton
+              disabled={publishing}
+              pending={publishing}
+              onClick={() => void regenerate()}
+            >
               确认生成并发布
             </InkButton>
             <InkButton
               variant="secondary"
               disabled={publishing}
+              pending={publishing}
               onClick={() => setConfirming(false)}
             >
               取消
