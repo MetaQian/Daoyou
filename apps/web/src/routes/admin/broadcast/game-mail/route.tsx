@@ -1,7 +1,14 @@
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton, InkInput } from '@app/components/ui';
-import { type SystemMailCampaign, type SystemMailListItem } from '@daoyou/game-domain/mail';
-import { formatMailTime, systemMailConditionSummary, systemMailStatusLabel } from '@daoyou/game-rules/mail';
+import {
+  type SystemMailCampaign,
+  type SystemMailListItem,
+} from '@daoyou/game-domain/mail';
+import {
+  formatMailTime,
+  systemMailConditionSummary,
+  systemMailStatusLabel,
+} from '@daoyou/game-rules/mail';
 import { useEffect, useState } from 'react';
 import { AdminDialog } from '../../_components/AdminDialog';
 import { AdminPageHeader } from '../../_components/AdminPage';
@@ -123,10 +130,10 @@ export default function AdminSystemMailPage() {
             onChange={setSearchDraft}
           />
         </div>
-        <InkButton type="submit" disabled={loading}>
+        <InkButton type="submit" disabled={loading} pending={loading}>
           搜索
         </InkButton>
-        <InkButton disabled={loading} onClick={refresh}>
+        <InkButton disabled={loading} pending={loading} onClick={refresh}>
           刷新
         </InkButton>
       </form>
@@ -158,7 +165,11 @@ export default function AdminSystemMailPage() {
                   {formatMailTime(item.endsAt)}（北京时间）
                 </p>
               </div>
-              <InkButton disabled={busy} onClick={() => void open(item)}>
+              <InkButton
+                disabled={busy}
+                pending={busy}
+                onClick={() => void open(item)}
+              >
                 {item.status === 'draft' ? '编辑草稿' : '查看详情'}
               </InkButton>
             </article>
@@ -168,6 +179,7 @@ export default function AdminSystemMailPage() {
       <div className="flex items-center justify-between gap-3">
         <InkButton
           disabled={page === 1 || loading}
+          pending={loading}
           onClick={() => {
             setPage((p) => p - 1);
             refresh();
@@ -180,6 +192,7 @@ export default function AdminSystemMailPage() {
         </span>
         <InkButton
           disabled={!hasMore || loading}
+          pending={loading}
           onClick={() => {
             setPage((p) => p + 1);
             refresh();
@@ -220,6 +233,7 @@ export default function AdminSystemMailPage() {
             <>
               <InkButton
                 disabled={busy}
+                pending={busy}
                 onClick={() => {
                   setEditor({ initial: detail, copy: true });
                   setDetail(null);
@@ -235,6 +249,7 @@ export default function AdminSystemMailPage() {
                     </span>
                     <InkButton
                       disabled={busy}
+                      pending={busy}
                       onClick={() => setConfirmStop(false)}
                     >
                       取消
