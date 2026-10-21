@@ -5,16 +5,13 @@ import {
   type SponsorshipTierId,
 } from '@daoyou/game-domain/sponsorship';
 import { useEffect, useState } from 'react';
+import { SubscriptionPlansSection } from './SubscriptionPlansSection';
 import {
   editableSubscriptionPlans,
   serializeSubscriptionPlans,
   type EditableSubscriptionPlan,
 } from './SubscriptionPlansSection.helpers';
-import { SubscriptionPlansSection } from './SubscriptionPlansSection';
-import {
-  sponsorshipRequest,
-  type SponsorshipConfig,
-} from './sponsorshipAdmin';
+import { sponsorshipRequest, type SponsorshipConfig } from './sponsorshipAdmin';
 
 export function PlansPanel({
   onNotice,
@@ -82,7 +79,8 @@ export function PlansPanel({
           <div>
             <h3 className="text-lg">功德档位</h3>
             <p className="text-ink-secondary mt-1 max-w-xl text-sm">
-              名称和主题固定。方案 ID 对应爱发电订阅，最低金额只用于没有方案 ID 的自选订单。每月声望在订单履约时乘以订阅月数，直接计入角色。
+              名称和主题固定。方案 ID 对应爱发电订阅，最低金额只用于没有方案 ID
+              的自选订单。每月声望在订单履约时乘以订阅月数，直接计入角色。
             </p>
           </div>
           {config?.ordersAcceptedAfter && (
@@ -107,7 +105,9 @@ export function PlansPanel({
               {config &&
                 SPONSORSHIP_TIER_IDS.map((tier) => (
                   <tr key={tier} className="border-ink/10 border-t">
-                    <td className="py-3 pr-3">{SPONSORSHIP_TIER_META[tier].name}</td>
+                    <td className="py-3 pr-3">
+                      {SPONSORSHIP_TIER_META[tier].name}
+                    </td>
                     <td className="pr-3">
                       <input
                         className="w-full border p-2 font-mono text-sm"
@@ -164,12 +164,18 @@ export function PlansPanel({
         </div>
       </section>
       <div className="flex gap-4">
-        <InkButton variant="primary" disabled={busy || !config} onClick={() => void save()}>
+        <InkButton
+          variant="primary"
+          disabled={busy || !config}
+          pending={busy}
+          onClick={() => void save()}
+        >
           保存方案
         </InkButton>
         <InkButton
           variant="secondary"
           disabled={busy}
+          pending={busy}
           onClick={() =>
             void sponsorshipRequest('/api/admin/sponsorship/ping', {
               method: 'POST',
