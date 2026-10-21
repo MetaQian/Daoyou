@@ -1,16 +1,19 @@
 import { InkButton } from '@app/components/ui/InkButton';
 import { useInventoryBag } from '@app/lib/resources/bag';
 import { useCraftStorage } from '@app/lib/resources/craftStorage';
-import type {
-  ManualAction,
-  CharacterManualDefV1,
-} from '@daoyou/game-domain/manuals';
-import type { ManualView } from '@daoyou/contracts/manuals';
 import type { InventoryView } from '@daoyou/contracts/inventory';
-import { manualSlot } from '@daoyou/game-rules/manuals/projection';
+import type { ManualView } from '@daoyou/contracts/manuals';
 import { CHARACTER_MANUALS_V1 } from '@daoyou/game-content/manuals';
+import type {
+  CharacterManualDefV1,
+  ManualAction,
+} from '@daoyou/game-domain/manuals';
 import { itemDefinition } from '@daoyou/game-rules/inventory';
-import { manualJadeCost, previewManualAction } from '@daoyou/game-rules/manuals';
+import {
+  manualJadeCost,
+  previewManualAction,
+} from '@daoyou/game-rules/manuals';
+import { manualSlot } from '@daoyou/game-rules/manuals/projection';
 import { useState } from 'react';
 import { CraftInventoryPanel } from '../items/CraftInventoryPanel';
 import {
@@ -127,6 +130,7 @@ export function ManualJadePicker({
               ? (close) => (
                   <InkButton
                     disabled={disabled || loading || !!error}
+                    pending={loading}
                     onClick={() => {
                       close();
                       onChoose(choice.action, choice.item);
