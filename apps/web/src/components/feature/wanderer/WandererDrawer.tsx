@@ -26,8 +26,8 @@ import type {
   WandererState,
 } from '@daoyou/contracts/wanderer';
 import { BEAST_SUPERIOR_BOOK_SKILL_IDS } from '@daoyou/game-content/beasts';
-import { BEAST_LURE } from '@daoyou/game-content/items/beasts';
 import { findItemDefinition } from '@daoyou/game-content/items';
+import { BEAST_LURE } from '@daoyou/game-content/items/beasts';
 import { WANDERER_SUPERIOR_DEW_ID } from '@daoyou/game-rules/wanderer';
 import { useState, type ReactNode } from 'react';
 
@@ -203,7 +203,8 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
       title: '买下灵印',
       content: (
         <p className="text-sm leading-7">
-          花费 <SpiritStones amount={expectedPrice} />，买一本随机上品传承灵印。
+          花费 <SpiritStones amount={expectedPrice} />
+          ，买一本随机上品传承灵印。
         </p>
       ),
       confirmLabel: '买下',
@@ -233,8 +234,8 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
       title: '买下引妖香',
       content: (
         <p className="text-sm leading-7">
-          花费 <SpiritStones amount={expectedPrice} />，买 1
-          份引妖香。
+          花费 <SpiritStones amount={expectedPrice} />
+          ，买 1 份引妖香。
         </p>
       ),
       confirmLabel: '买下',
@@ -260,8 +261,8 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
       title: '买下灵露',
       content: (
         <p className="text-sm leading-7">
-          花费 <SpiritStones amount={expectedPrice} />，买 1
-          瓶上品归元灵露。
+          花费 <SpiritStones amount={expectedPrice} />
+          ，买 1 瓶上品归元灵露。
         </p>
       ),
       confirmLabel: '买下',
@@ -339,7 +340,11 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
 
       {view === 'beasts' ? (
         <div className="space-y-4">
-          <InkButton disabled={pending} onClick={() => openView('meet')}>
+          <InkButton
+            disabled={pending}
+            pending={pending}
+            onClick={() => openView('meet')}
+          >
             先不交
           </InkButton>
           {error ? (
@@ -404,7 +409,11 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
 
       {view === 'stall' ? (
         <div className="space-y-4">
-          <InkButton disabled={pending} onClick={() => openView('meet')}>
+          <InkButton
+            disabled={pending}
+            pending={pending}
+            onClick={() => openView('meet')}
+          >
             先不看
           </InkButton>
           {error ? (
@@ -431,6 +440,7 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
                   {(close) => (
                     <InkButton
                       disabled={pending}
+                      pending={pending}
                       onClick={() => {
                         close();
                         askIncense();
@@ -452,6 +462,7 @@ export function WandererDrawer({ onClose }: { onClose: () => void }) {
                   {(close) => (
                     <InkButton
                       disabled={pending}
+                      pending={pending}
                       onClick={() => {
                         close();
                         askDew();
