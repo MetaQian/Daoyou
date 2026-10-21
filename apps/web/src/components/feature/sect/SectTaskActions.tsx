@@ -37,6 +37,7 @@ export function AcceptAction({
       variant="primary"
       className={actionClassName(display)}
       disabled={busy || !action.enabled}
+      pending={busy}
       onClick={() =>
         void execute(task, action, {}, `已接下「${task.presentation.title}」`)
       }
@@ -61,6 +62,7 @@ export function ClaimAction({
       variant="primary"
       className={actionClassName(display)}
       disabled={busy || !action.enabled}
+      pending={busy}
       onClick={() =>
         void execute(task, action, {}, `「${task.presentation.title}」已结清`)
       }
@@ -132,6 +134,7 @@ export function AbandonAction({
       variant="secondary"
       className={actionClassName(display)}
       disabled={busy || !enabled}
+      pending={busy}
       onClick={() =>
         openDialog({
           title: '放弃宗门任务',
@@ -175,6 +178,7 @@ export function BattleAction({
       variant="primary"
       className={actionClassName(display)}
       disabled={busy || !action.enabled}
+      pending={busy}
       onClick={() => {
         if (display === 'conversation' && activityLocation) {
           navigate(
@@ -206,6 +210,7 @@ export function SweepEntryAction({
       variant="primary"
       className={actionClassName(display)}
       disabled={busy || !action.enabled}
+      pending={busy}
       onClick={() =>
         navigate(createSectRoomNpcHref('/game/sect/gate', 'facility'))
       }
@@ -229,6 +234,7 @@ export function MiningEntryAction({
       variant="primary"
       className={actionClassName(display)}
       disabled={busy || !action.enabled}
+      pending={busy}
       onClick={() =>
         navigate(createSectRoomNpcHref('/game/sect/spirit-vein', 'facility'))
       }
@@ -251,6 +257,7 @@ export function ItemDeliveryAction(props: SectTaskActionRendererProps) {
         variant="primary"
         className={actionClassName(props.display)}
         disabled={busy || !props.action.enabled}
+        pending={busy}
         onClick={() => setOpen(true)}
       >
         {props.action.enabled
