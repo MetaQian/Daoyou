@@ -213,6 +213,7 @@ function OpenSubmission({
                       !!inventoryError ||
                       !!reasonFor(item)
                     }
+                    pending={busy || loading}
                     onClick={() => {
                       choose(item);
                       close();
@@ -251,6 +252,7 @@ function OpenSubmission({
           <div className="lg:hidden">
             <InkButton
               disabled={busy || loading}
+              pending={busy || loading}
               onClick={() => setBagOpen(true)}
             >
               选择物品
@@ -277,7 +279,11 @@ function OpenSubmission({
                   }
                 />
               </div>
-              <InkButton disabled={busy} onClick={() => choose(item)}>
+              <InkButton
+                disabled={busy}
+                pending={busy}
+                onClick={() => choose(item)}
+              >
                 移出
               </InkButton>
             </div>
@@ -290,7 +296,7 @@ function OpenSubmission({
             ；超出最低要求不会增加奖励。
           </p>
           <div className="flex justify-end gap-3">
-            <InkButton disabled={busy} onClick={onClose}>
+            <InkButton disabled={busy} pending={busy} onClick={onClose}>
               取消
             </InkButton>
             <InkButton
