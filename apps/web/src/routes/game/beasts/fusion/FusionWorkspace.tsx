@@ -168,13 +168,19 @@ export function FusionWorkspace({
   return (
     <div>
       <div className="mb-5 flex items-center justify-between gap-3">
-        <InkButton variant="secondary" disabled={pending} onClick={onClose}>
+        <InkButton
+          variant="secondary"
+          disabled={pending}
+          pending={pending}
+          onClick={onClose}
+        >
           {closeLabel}
         </InkButton>
         <InkButton
           onClick={() => setHelp(true)}
           variant="ghost"
           disabled={pending}
+          pending={pending}
         >
           玩法说明
         </InkButton>
