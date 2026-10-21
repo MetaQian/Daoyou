@@ -64,7 +64,7 @@ export function AdminDialog({
             <h3 id={titleId} className="text-lg font-semibold">
               {title}
             </h3>
-            <InkButton disabled={busy} onClick={onClose}>
+            <InkButton disabled={busy} pending={busy} onClick={onClose}>
               关闭
             </InkButton>
           </header>
