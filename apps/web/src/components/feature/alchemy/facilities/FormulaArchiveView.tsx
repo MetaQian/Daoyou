@@ -6,12 +6,12 @@ import {
   InkNotice,
   inkFieldVariants,
 } from '@app/components/ui';
-import { formatAlchemyPropertyVector } from '@daoyou/game-rules/alchemy';
 import {
   PILL_FAMILY_VALUES,
   type AlchemyFormula,
   type PillFamily,
 } from '@daoyou/game-domain/consumables';
+import { formatAlchemyPropertyVector } from '@daoyou/game-rules/alchemy';
 import { useState } from 'react';
 import { AlchemyToolWorkspace } from '../AlchemyToolWorkspace';
 import { useAlchemyCraftSession } from '../alchemyCraftContext';
@@ -135,6 +135,7 @@ export function FormulaArchiveView({
           <InkButton
             variant="secondary"
             disabled={!library.pagination.hasPreviousPage || library.loading}
+            pending={library.loading}
             onClick={() => library.setPage(library.page - 1)}
           >
             上一页
@@ -146,6 +147,7 @@ export function FormulaArchiveView({
           <InkButton
             variant="secondary"
             disabled={!library.pagination.hasNextPage || library.loading}
+            pending={library.loading}
             onClick={() => library.setPage(library.page + 1)}
           >
             下一页
