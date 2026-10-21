@@ -1,6 +1,6 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui';
+import { apiFetch } from '@app/lib/api/fetch';
 import type {
   AdminOnlineUsersResponse,
   AdminOnlineUsersSnapshot,
@@ -98,6 +98,7 @@ export default function AdminOnlineUsersPage() {
             type="button"
             variant="secondary"
             disabled={refreshing}
+            pending={refreshing}
             onClick={() => void loadSnapshot()}
           >
             {refreshing ? '刷新中...' : '刷新'}
