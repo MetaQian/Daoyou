@@ -152,6 +152,7 @@ export function BeastPanel({
                 variant="ghost"
                 className="shrink-0 px-0 text-sm tracking-normal"
                 disabled={pending}
+                pending={pending}
                 onClick={rename}
               >
                 改名
@@ -219,6 +220,7 @@ export function BeastPanel({
                 <InkButton
                   variant="primary"
                   disabled={pending || bagFull}
+                  pending={pending}
                   onClick={withdraw}
                 >
                   取出到灵兽袋
@@ -232,7 +234,11 @@ export function BeastPanel({
             ) : null}
             {store ? (
               <div className="flex items-center">
-                <InkButton disabled={pending || warehouseFull} onClick={store}>
+                <InkButton
+                  disabled={pending || warehouseFull}
+                  pending={pending}
+                  onClick={store}
+                >
                   存入仓库
                 </InkButton>
                 {warehouseFull ? (
@@ -241,12 +247,16 @@ export function BeastPanel({
               </div>
             ) : null}
             {fuse ? (
-              <InkButton disabled={pending} onClick={fuse}>
+              <InkButton disabled={pending} pending={pending} onClick={fuse}>
                 融合
               </InkButton>
             ) : null}
             <div className="flex items-center">
-              <InkButton disabled={pending || capped} onClick={feed}>
+              <InkButton
+                disabled={pending || capped}
+                pending={pending}
+                onClick={feed}
+              >
                 喂养
               </InkButton>
               {capped ? (
@@ -256,6 +266,7 @@ export function BeastPanel({
             <div className="flex items-center">
               <InkButton
                 disabled={pending || beast.currentLifespan >= beast.maxLifespan}
+                pending={pending}
                 onClick={() => act('rest')}
               >
                 休养
@@ -343,7 +354,7 @@ export function BeastPanel({
         disabled={pending || !canAllocate || confirming}
         onConfirm={() => setConfirming(true)}
         headerAction={
-          <InkButton disabled={pending} onClick={rejuvenate}>
+          <InkButton disabled={pending} pending={pending} onClick={rejuvenate}>
             洗点
           </InkButton>
         }
@@ -359,6 +370,7 @@ export function BeastPanel({
             <InkButton
               variant="secondary"
               disabled={pending}
+              pending={pending}
               onClick={() => setConfirming(false)}
             >
               返回调整
@@ -396,10 +408,10 @@ export function BeastPanel({
         <div className="mb-3 flex items-center justify-between gap-2">
           <h3 className="text-teal text-sm">技能</h3>
           <div className="flex flex-wrap items-center gap-2">
-            <InkButton disabled={pending} onClick={learn}>
+            <InkButton disabled={pending} pending={pending} onClick={learn}>
               领悟传承
             </InkButton>
-            <InkButton disabled={pending} onClick={refine}>
+            <InkButton disabled={pending} pending={pending} onClick={refine}>
               洗炼
             </InkButton>
           </div>
@@ -417,6 +429,7 @@ export function BeastPanel({
         <div className="flex items-center gap-1">
           <InkButton
             disabled={pending || isLead}
+            pending={pending}
             onClick={() => act('release')}
           >
             放生
