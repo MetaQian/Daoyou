@@ -1,7 +1,7 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkDetailDrawer } from '@app/components/ui/InkDetailDrawer';
+import { apiFetch } from '@app/lib/api/fetch';
 import { consumeResourceMutation } from '@app/lib/resources/mutations';
 import { usePlayerSession } from '@app/lib/resources/player';
 import type { VaultView } from '@daoyou/contracts/forging';
@@ -157,6 +157,7 @@ function VaultList({ onChanged }: { onChanged?: () => void }) {
           {error}{' '}
           <InkButton
             disabled={pending}
+            pending={pending}
             onClick={() => {
               setView(undefined);
               setRefresh((n) => n + 1);
@@ -201,6 +202,7 @@ function VaultList({ onChanged }: { onChanged?: () => void }) {
               </div>
               <InkButton
                 disabled={pending || !!item.unavailableReason}
+                pending={pending}
                 onClick={() => void withdraw([item])}
               >
                 全部取出
@@ -221,6 +223,7 @@ function VaultList({ onChanged }: { onChanged?: () => void }) {
         <div className="flex items-center justify-between">
           <InkButton
             disabled={pending || view.page === 0}
+            pending={pending}
             onClick={() => {
               setPage(view.page - 1);
               setView(undefined);
@@ -233,6 +236,7 @@ function VaultList({ onChanged }: { onChanged?: () => void }) {
           </span>
           <InkButton
             disabled={pending || (view.page + 1) * 40 >= view.total}
+            pending={pending}
             onClick={() => {
               setPage(view.page + 1);
               setView(undefined);
