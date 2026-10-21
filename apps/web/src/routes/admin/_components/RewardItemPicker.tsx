@@ -1,28 +1,28 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import {
   InventoryGrid,
   ItemSlot,
 } from '@app/components/feature/items/ItemSlot';
 import { InkButton, InkInput, InkNotice, InkSelect } from '@app/components/ui';
-import { TALISMAN_SCENARIO_OPTIONS } from '@daoyou/game-domain/consumables';
-import {
-  rewardDisplayItem,
-  RewardItemSchema,
-  libraryMaterialGrant,
-} from '@daoyou/game-rules/rewards/materials';
+import { apiFetch } from '@app/lib/api/fetch';
+import { QUALITY_VALUES } from '@daoyou/constants/qualities';
 import { DAO_EQUIPMENT_TEMPLATES_V1 } from '@daoyou/game-content/equipment/base';
-import { OPEN_EQUIPMENT_LEVELS } from '@daoyou/game-domain/equipment';
-import { equipmentRealm } from '@daoyou/game-rules/equipment/forging';
 import { DAO_WEAPONS } from '@daoyou/game-content/equipment/weapons';
+import { ITEM_DEFINITIONS } from '@daoyou/game-content/items';
+import { TALISMAN_SCENARIO_OPTIONS } from '@daoyou/game-domain/consumables';
+import { OPEN_EQUIPMENT_LEVELS } from '@daoyou/game-domain/equipment';
 import type { ItemGrant } from '@daoyou/game-domain/inventory';
 import {
   INVENTORY_MATERIAL_TYPES,
   MATERIAL_TYPE_NAMES,
 } from '@daoyou/game-domain/inventory';
-import { ITEM_DEFINITIONS } from '@daoyou/game-content/items';
-import { ALCHEMY_PROPERTY_LABELS } from '@daoyou/game-rules/alchemy';
 import type { ItemLibraryEntry } from '@daoyou/game-domain/items/catalog';
-import { QUALITY_VALUES } from '@daoyou/constants/qualities';
+import { ALCHEMY_PROPERTY_LABELS } from '@daoyou/game-rules/alchemy';
+import { equipmentRealm } from '@daoyou/game-rules/equipment/forging';
+import {
+  libraryMaterialGrant,
+  rewardDisplayItem,
+  RewardItemSchema,
+} from '@daoyou/game-rules/rewards/materials';
 import { useEffect, useState } from 'react';
 import { AdminDialog } from './AdminDialog';
 
@@ -234,7 +234,11 @@ export function RewardItemPicker({
         footer={
           creating ? (
             <>
-              <InkButton disabled={pending} onClick={() => setCreating(false)}>
+              <InkButton
+                disabled={pending}
+                pending={pending}
+                onClick={() => setCreating(false)}
+              >
                 返回道具列表
               </InkButton>
               <InkButton
@@ -353,6 +357,7 @@ export function RewardItemPicker({
                 <div className="border-ink/10 flex items-center justify-between border-t pt-3">
                   <InkButton
                     disabled={page <= 1 || pending}
+                    pending={pending}
                     onClick={() => setPage((p) => p - 1)}
                   >
                     上一页
@@ -362,6 +367,7 @@ export function RewardItemPicker({
                   </span>
                   <InkButton
                     disabled={page >= totalPages || pending}
+                    pending={pending}
                     onClick={() => setPage((p) => p + 1)}
                   >
                     下一页
