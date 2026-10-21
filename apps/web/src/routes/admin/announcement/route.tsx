@@ -1,7 +1,7 @@
-import { apiFetch } from '@app/lib/api/fetch';
 import { useInkUI } from '@app/components/providers/InkUIProvider';
 import { InkButton } from '@app/components/ui/InkButton';
 import { InkInput } from '@app/components/ui/InkInput';
+import { apiFetch } from '@app/lib/api/fetch';
 import { useCallback, useEffect, useState } from 'react';
 
 type LoadState = {
@@ -105,6 +105,7 @@ export default function AuthAnnouncementAdminPage() {
             type="button"
             variant="primary"
             disabled={loading || saving}
+            pending={loading || saving}
             onClick={() => void submit()}
           >
             {saving ? '保存中…' : '保存'}
@@ -113,6 +114,7 @@ export default function AuthAnnouncementAdminPage() {
             type="button"
             variant="secondary"
             disabled={loading || saving}
+            pending={loading || saving}
             onClick={() => void load()}
           >
             重新加载
