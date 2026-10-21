@@ -44,12 +44,17 @@ export function BattlePreparation({
         迎战将以当前气血、法力入场，战斗消耗会保留。也可就此结束探索，带走此前已确定的收获。
       </p>
       <div className="flex flex-wrap gap-3">
-        <InkButton disabled={processing} onClick={() => void onBegin()}>
+        <InkButton
+          disabled={processing}
+          pending={processing}
+          onClick={() => void onBegin()}
+        >
           {processing ? '处理中…' : '迎战'}
         </InkButton>
         <InkButton
           variant="secondary"
           disabled={processing}
+          pending={processing}
           onClick={() => void onQuit()}
         >
           结束探索
