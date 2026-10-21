@@ -1,12 +1,20 @@
 import { InkButton, InkInput, InkSelect } from '@app/components/ui';
+import { REALM_STAGE_VALUES, REALM_VALUES } from '@daoyou/constants/realms';
 import {
   type MailRealm,
   type SystemMailCampaign,
   type SystemMailInput,
 } from '@daoyou/game-domain/mail';
-import { SystemMailInputSchema, formatMailTime, systemMailConditionSummary } from '@daoyou/game-rules/mail';
-import { SPONSORSHIP_TIER_IDS, SPONSORSHIP_TIER_META, type SponsorshipTierId } from '@daoyou/game-domain/sponsorship';
-import { REALM_STAGE_VALUES, REALM_VALUES } from '@daoyou/constants/realms';
+import {
+  SPONSORSHIP_TIER_IDS,
+  SPONSORSHIP_TIER_META,
+  type SponsorshipTierId,
+} from '@daoyou/game-domain/sponsorship';
+import {
+  SystemMailInputSchema,
+  formatMailTime,
+  systemMailConditionSummary,
+} from '@daoyou/game-rules/mail';
 import { useRef, useState } from 'react';
 import { AdminDialog } from '../../_components/AdminDialog';
 import { AdminSteps } from '../../_components/AdminPage';
@@ -214,6 +222,7 @@ export function SystemMailEditor({
           {step > 0 && (
             <InkButton
               disabled={busy}
+              pending={busy}
               onClick={() => {
                 setStep(step - 1);
                 setError('');
@@ -222,7 +231,11 @@ export function SystemMailEditor({
               上一步
             </InkButton>
           )}
-          <InkButton disabled={busy} onClick={() => void submit(false)}>
+          <InkButton
+            disabled={busy}
+            pending={busy}
+            onClick={() => void submit(false)}
+          >
             保存草稿
           </InkButton>
           <InkButton
