@@ -79,7 +79,9 @@ export function MeritOffer({
                 )}
                 onClick={() => setPicked(tier)}
               >
-                <span className="text-sm">{SPONSORSHIP_TIER_META[tier].name}</span>
+                <span className="text-sm">
+                  {SPONSORSHIP_TIER_META[tier].name}
+                </span>
                 <span className="shrink-0 text-xs">
                   <GameIcon value="🏵️" /> 每月
                   <span className="font-mono font-semibold tracking-tight">
@@ -99,6 +101,7 @@ export function MeritOffer({
                 variant="outline"
                 className="!px-0 !text-current"
                 disabled={busy || !config?.enabled || !offer?.configured}
+                pending={busy}
                 onClick={() => onCheckout(selected)}
               >
                 落印结缘
