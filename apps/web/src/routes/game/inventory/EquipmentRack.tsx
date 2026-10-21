@@ -3,13 +3,13 @@ import { GameIcon } from '@app/components/ui/GameIcon';
 import { GameImage } from '@app/components/ui/GameImage';
 import { InkButton } from '@app/components/ui/InkButton';
 import type { InventoryView } from '@daoyou/contracts/inventory';
-import { compileDaoEquipmentSpecialLoadoutV1 } from '@daoyou/game-rules/equipment/projection';
 import type {
   DaoEquipmentInstanceV1,
   DaoEquipmentLoadoutV1,
   DaoEquipmentSlot,
 } from '@daoyou/game-domain/equipment';
 import { EQUIPMENT_SLOT_NAMES } from '@daoyou/game-domain/equipment';
+import { compileDaoEquipmentSpecialLoadoutV1 } from '@daoyou/game-rules/equipment/projection';
 
 type Item = InventoryView['items'][number];
 const columns: DaoEquipmentSlot[][] = [
@@ -58,7 +58,11 @@ export function EquipmentAction({
       {reason ? (
         <p className="text-ink-secondary basis-full text-xs">{reason}</p>
       ) : null}
-      <InkButton disabled={pending || !result || !result.ok} onClick={onEquip}>
+      <InkButton
+        disabled={pending || !result || !result.ok}
+        pending={pending}
+        onClick={onEquip}
+      >
         {item.equipped
           ? '卸下'
           : equipped.some(
