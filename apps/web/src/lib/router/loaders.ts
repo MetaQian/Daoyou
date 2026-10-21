@@ -125,9 +125,10 @@ export async function requireAdminLoader({
   }
 
   if (response.status === 403) {
+    // statusText 协议限制 ISO-8859-1，不能放中文；提示走 data 字段展示
     throw new Response('当前账号没有管理员权限，请确认管理员账号配置。', {
       status: 403,
-      statusText: '无管理员权限',
+      statusText: 'Forbidden',
     });
   }
 
