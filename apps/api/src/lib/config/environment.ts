@@ -46,6 +46,7 @@ const environmentSchema = z
     API_IP_RATE_LIMIT_WINDOW_SECONDS: positiveInteger('60'),
     API_IP_RATE_LIMIT_MAX_REQUESTS: positiveInteger('300'),
     CHARACTER_GENERATION_DAILY_LIMIT: positiveInteger('6', 1000000),
+    LLM_TIMEOUT_MULTIPLIER: positiveInteger('1', 10000),
   })
   .catchall(z.string().optional())
   .superRefine((env, ctx) => {
