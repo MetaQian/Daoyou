@@ -5,6 +5,7 @@ import { dungeonReadiness } from '@daoyou/game-rules/dungeon';
 import { getMapNode, isSatelliteNode } from '@daoyou/game-content/world/map';
 import { canChallengeDungeonRealm } from '@daoyou/game-rules/world/dungeon';
 import { dungeonPlayer } from '@server/dungeon/application/flow/combatV6.js';
+import { dungeonActionLockTimeoutMs } from '@server/dungeon/application/flow/DungeonFlowService.js';
 import {
   type DungeonFlowService,
   type DungeonPersistenceSettlement,
@@ -106,7 +107,7 @@ export class DungeonApplicationService {
       {
         key: redisLockKeys.cultivatorMutation(args.cultivatorId),
         context: source,
-        timeoutMs: 240_000,
+        timeoutMs: dungeonActionLockTimeoutMs(),
         retries: 0,
       },
       async (lease) => {
