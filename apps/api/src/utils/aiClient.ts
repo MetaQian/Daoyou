@@ -93,6 +93,17 @@ const AI_DEFAULT_TIMEOUT_MS = 120_000;
 let activeAiRequests = 0;
 let rejectedAiRequests = 0;
 
+/**
+ * 全局 LLM 超时倍率（env: LLM_TIMEOUT_MULTIPLIER，默认 1）。
+ * 本地/自建模型推理慢，可整体放大各场景写死的超时（如 3 = 全部 ×3），
+ * 无需逐场景改代码。
+ */
+function llmTimeoutMultiplier(): number {
+  const raw = getRuntimeEnvironment().LLM_TIMEOUT_MULTIPLIER;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 1 ? n : 1;
+}
+
 export function getAiRuntimeStats() {
   return {
     activeRequests: activeAiRequests,
@@ -102,7 +113,7 @@ export function getAiRuntimeStats() {
 
 function startAiRequest(options: AiTextOptions) {
   options.abortSignal?.throwIfAborted();
-  const timeoutMs = options.timeoutMs ?? AI_DEFAULT_TIMEOUT_MS;
+  const timeoutMs = (options.timeoutMs ?? AI_DEFAULT_TIMEOUT_MS) * llmTimeoutMultiplier();
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
     throw new Error('Invalid AI timeout');
   }
