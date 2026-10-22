@@ -73,15 +73,11 @@ export class DungeonApplicationService {
   ) {}
   /** A synchronized read cannot report an old round while a command is still generating. */
   readDungeonState(cultivatorId: string, runId?: string) {
-    return this.withLock(
-      {
-        key: redisLockKeys.cultivatorMutation(cultivatorId),
-        context: 'dungeon-read',
-        timeoutMs: 30000,
-        retries: 0,
-      },
-      async () => this.flow.getState(cultivatorId, runId),
-    );
+    // 读路径不抢角色互斥锁：探索动作在 LLM 推演期间会长时间持锁，
+    // 读请求排队抢锁会返回 429，前端表现为"探索仍在处理中"。
+    // 状态读取是 Postgres 单行 + Redis 快照，原子且安全；
+    // 动作执行中读到的是动作前快照，属于合法状态。
+    return this.flow.getState(cultivatorId, runId);
   }
 
   async executeDungeonCommand(args: {
