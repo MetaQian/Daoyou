@@ -103,6 +103,7 @@ function llmTimeoutMultiplier(): number {
   const n = Number(raw);
   return Number.isFinite(n) && n >= 1 ? n : 1;
 }
+export { llmTimeoutMultiplier };
 
 export function getAiRuntimeStats() {
   return {
