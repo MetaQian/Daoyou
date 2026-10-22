@@ -36,9 +36,9 @@ export function useDungeonActions(
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: body === undefined ? undefined : JSON.stringify(body),
-        // 本地/自建模型单轮推演可达数分钟，90s 会掐断进行中的请求；
-        // 后端动作锁上限约 4 分钟，这里留足余量到 5 分钟
-        signal: AbortSignal.timeout(300000),
+        // 本地/自建模型单轮推演可达数分钟：后端动作锁 = (120s×倍率+60s)×2，
+        // 倍率 4 时最坏 600s，这里留足余量到 660s
+        signal: AbortSignal.timeout(660000),
       });
       const data = await response.json();
       if (!response.ok || data.error) {
