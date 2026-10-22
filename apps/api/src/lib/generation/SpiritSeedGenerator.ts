@@ -172,9 +172,11 @@ export class SpiritSeedGenerator extends SpiritSeedSkeletonGenerator {
         name: 'SpiritSeedIdentityList',
         description: '灵种身份、隐性习性与玩家线索',
         sceneId: 'spirit-seed-generation',
+        // 中文身份字段 + JSON 结构开销大，每灵种按 2500 token 预算，
+        // 上限 20000；此前 1000/灵种 会截断触发 NoOutputGeneratedError
         maxOutputTokens: Math.min(
-          8_000,
-          Math.max(1_600, skeletons.length * 1_000),
+          20_000,
+          Math.max(3_200, skeletons.length * 2_500),
         ),
       });
       identities = skeletons.map((skeleton, index) => {
