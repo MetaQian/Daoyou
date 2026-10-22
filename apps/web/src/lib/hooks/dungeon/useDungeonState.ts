@@ -17,11 +17,17 @@ export function useDungeonState(cultivatorId: string | undefined) {
     if (!cultivatorId) return;
     const request = ++sequence.current;
     setLoading(true);
-    async function read(runId?: string): Promise<DungeonState | null> {
+    async function read(runId?: string, attempt = 0): Promise<DungeonState | null> {
       const res = await apiFetch(
         `/api/dungeon/state${runId ? `?runId=${encodeURIComponent(runId)}` : ''}`,
         { signal: AbortSignal.timeout(15000) },
       );
+      if ((res.status === 409 || res.status === 429) && attempt < 3) {
+        // 后端动作仍在处理（LLM 推演中），短暂等待后自动重试，不直接报错
+        await new Promise((resolve) => setTimeout(resolve, 2000 * (attempt + 1)));
+        if (request !== sequence.current) return null;
+        return read(runId, attempt + 1);
+      }
       if (res.status === 409 || res.status === 429)
         throw new Error('探索仍在处理中，请稍后重新读取');
       if (!res.ok) throw new Error('暂时无法读取探索结果，请重新读取');
