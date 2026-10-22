@@ -63,9 +63,15 @@ import {
   DungeonState,
 } from '@server/dungeon/application/flow/types.js';
 import type { DungeonRunStore } from './DungeonRunStore.js';
+import { llmTimeoutMultiplier } from '@server/utils/aiClient.js';
 import { DungeonFlowError, DungeonFlowErrorCode } from './errors.js';
 
 const FLOW_LOCK_TTL_SECONDS = 180;
+// 本地/自建慢模型下单轮 LLM 可跑满 AI 超时（120s × LLM_TIMEOUT_MULTIPLIER），
+// 动作锁必须覆盖最坏 LLM 耗时，否则锁提前过期会让并发请求穿透
+const dungeonActionLockTimeoutMs = () =>
+  (120_000 * llmTimeoutMultiplier() + 60_000) * 2;
+export { dungeonActionLockTimeoutMs };
 export { DungeonFlowError, DungeonFlowErrorCode } from './errors.js';
 
 class DungeonSettlementRecoverableError extends Error {
@@ -443,7 +449,7 @@ export class DungeonFlowService {
         {
           key: redisLockKeys.dungeonCommand(cultivatorId),
           context,
-          timeoutMs: FLOW_LOCK_TTL_SECONDS * 1000,
+          timeoutMs: dungeonActionLockTimeoutMs(),
           retries: 0,
           delayMs: 50,
         },
