@@ -33,6 +33,7 @@ export type DungeonViewState =
     }
   | { type: 'looting'; state: DungeonState }
   | { type: 'recoverable_error'; state: DungeonState }
+  | { type: 'generating' }
   | {
       type: 'settlement';
       settlement?: DungeonSettlement;
@@ -92,6 +93,7 @@ export function useDungeonViewModel(
     loading: stateLoading,
     refresh,
     error: readError,
+    generating,
     dismissSettlement,
   } = useDungeonState(cultivatorId);
   const {
@@ -142,6 +144,12 @@ export function useDungeonViewModel(
       return { type: 'not_authenticated' };
     }
 
+    // 后端大模型推演中（start/action 的 LLM 尚未返回）：禁止一切重复操作，
+    // 只展示推演中界面，状态轮询到 LLM 返回后自动恢复。
+    if (generating) {
+      return { type: 'generating' };
+    }
+
     if (
       !state?.isFinished &&
       state?.status === 'WAITING_BATTLE' &&
@@ -185,7 +193,7 @@ export function useDungeonViewModel(
       type: 'map_selection',
       preSelectedNodeId,
     };
-  }, [stateLoading, hasCultivator, state, lastRound, preSelectedNodeId]);
+  }, [stateLoading, hasCultivator, generating, state, lastRound, preSelectedNodeId]);
 
   /**
    * 操作：启动副本
