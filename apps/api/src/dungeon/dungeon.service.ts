@@ -34,7 +34,11 @@ export class DungeonService {
   }
 
   async state(owner: string, runId?: string) {
-    return { state: await this.application.readDungeonState(owner, runId) };
+    const [state, generating] = await Promise.all([
+      this.application.readDungeonState(owner, runId),
+      this.application.readDungeonGenerating(owner),
+    ]);
+    return { state, generating };
   }
 
   async history(owner: string, pageQuery?: string, pageSizeQuery?: string) {
