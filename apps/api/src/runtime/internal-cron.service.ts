@@ -5,6 +5,7 @@ import {
   runAuctionExpireJob,
   runExpiredDataCleanupJob,
   runMarketRefreshCronJob,
+  runMiningOreStockBackfillJob,
   runMaterialLibraryDailyGenerationJob,
   runRankRewardsJob,
   runResourceReplayCleanupJob,
@@ -41,6 +42,9 @@ export class InternalCronService {
   }
   materialLibraryGeneration(scheduledAt?: Date) {
     return runMaterialLibraryDailyGenerationJob(scheduledAt);
+  }
+  miningOreStockBackfill() {
+    return runMiningOreStockBackfillJob();
   }
   sponsorshipReconcile() {
     return runSponsorshipReconcileJob(false);
