@@ -6,6 +6,8 @@ export function useDungeonState(cultivatorId: string | undefined) {
   const [state, setState] = useState<DungeonState | null>(null);
   const [loading, setLoading] = useState(!!cultivatorId);
   const [error, setError] = useState<string | null>(null);
+  // 后端大模型推演中（start/action 的 LLM 尚未返回）：期间禁止重复操作，并自动轮询
+  const [generating, setGenerating] = useState(false);
   const sequence = useRef(0);
   const storageKey = `dungeon:last-run:${cultivatorId}`;
   useEffect(() => {
@@ -17,7 +19,10 @@ export function useDungeonState(cultivatorId: string | undefined) {
     if (!cultivatorId) return;
     const request = ++sequence.current;
     setLoading(true);
-    async function read(runId?: string, attempt = 0): Promise<DungeonState | null> {
+    async function read(
+      runId?: string,
+      attempt = 0,
+    ): Promise<{ next: DungeonState | null; generating: boolean } | null> {
       const res = await apiFetch(
         `/api/dungeon/state${runId ? `?runId=${encodeURIComponent(runId)}` : ''}`,
         { signal: AbortSignal.timeout(15000) },
@@ -34,14 +39,16 @@ export function useDungeonState(cultivatorId: string | undefined) {
       const data = await res.json();
       if (data.error || !('state' in data))
         throw new Error('探索状态读取失败，请重新读取');
-      return data.state;
+      return { next: data.state, generating: Boolean(data.generating) };
     }
     try {
-      let next = await read();
+      let result = await read();
       const lastRun = sessionStorage.getItem(storageKey);
-      if (!next && lastRun) next = await read(lastRun);
+      if (!result?.next && lastRun)
+        result = (await read(lastRun)) ?? result;
       if (request !== sequence.current) return;
-      setState(next);
+      setState(result?.next ?? null);
+      setGenerating(result?.generating ?? false);
       setError(null);
     } catch (reason) {
       if (request !== sequence.current) return;
@@ -64,11 +71,19 @@ export function useDungeonState(cultivatorId: string | undefined) {
     };
   }, [refresh]);
 
+  // 推演中（LLM 未返回）：每 10 秒自动轮询，直到新状态落地（或标记 TTL 过期）
+  useEffect(() => {
+    if (!generating || error || !cultivatorId) return;
+    const timer = setTimeout(() => void refresh(), 10000);
+    return () => clearTimeout(timer);
+  }, [generating, error, cultivatorId, refresh]);
+
   return {
     state,
     setState,
     loading,
     error,
+    generating,
     refresh,
     dismissSettlement: () => {
       sessionStorage.removeItem(storageKey);
