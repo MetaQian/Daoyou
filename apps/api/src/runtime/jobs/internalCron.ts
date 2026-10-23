@@ -1,6 +1,7 @@
 import { RANKING_REWARDS } from '@daoyou/game-content/economy';
 import { REALM_VALUES } from '@daoyou/constants/realms';
 import {
+  ensureMiningOreStock,
   generateDailyMarketMaterialLibraryEntries,
   ITEM_LIBRARY_SYSTEM_USER_ID,
 } from '@server/admin/application/MaterialLibraryService.js';
@@ -345,6 +346,20 @@ export async function runMaterialLibraryDailyGenerationJob(
   return withJobLock(
     'material-library-daily-generation',
     async () => {
+      // 采掘兜底补货与市场生成开关解耦：低境界灵矿是核心玩法结算依赖，
+      // 每日市场计划只产真品及以上，凡品/灵品/玄品必须单独维持存量。
+      const oreStock = await ensureMiningOreStock({
+        userId: ITEM_LIBRARY_SYSTEM_USER_ID,
+      }).catch((error) => {
+        console.error('[internal-cron] mining ore stock backfill failed:', error);
+        return null;
+      });
+      if (oreStock && oreStock.inserted > 0) {
+        console.info(
+          `[internal-cron] mining ore stock backfilled: ${oreStock.filled.join(',')} (+${oreStock.inserted})`,
+        );
+      }
+
       const settings = await getItemLibraryDailyMaterialGenerationSettings();
       if (!settings.enabled) {
         return {
@@ -370,6 +385,29 @@ export async function runMaterialLibraryDailyGenerationJob(
     },
     MATERIAL_LIBRARY_DAILY_GENERATION_LOCK_TTL_SECONDS,
   );
+}
+
+/**
+ * 灵矿存量兜底：独立于每日市场生成，供启动补偿与手动触发。
+ * 幂等——已满足存量下限的品质直接跳过。
+ */
+export async function runMiningOreStockBackfillJob(): Promise<CronJobResult> {
+  return withJobLock('mining-ore-stock-backfill', async () => {
+    const result = await ensureMiningOreStock({
+      userId: ITEM_LIBRARY_SYSTEM_USER_ID,
+    });
+    if (result.inserted > 0) {
+      console.info(
+        `[internal-cron] mining ore stock backfilled: ${result.filled.join(',')} (+${result.inserted})`,
+      );
+    }
+    return {
+      success: true,
+      processed: result.inserted,
+      skipped: result.inserted === 0,
+      reason: result.inserted === 0 ? 'stock_sufficient' : undefined,
+    };
+  });
 }
 
 export async function runResourceReplayCleanupJob(): Promise<CronJobResult> {
