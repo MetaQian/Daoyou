@@ -65,11 +65,26 @@ type DungeonDeferredResult = Record<string, unknown> & {
   afterCommit?: () => Promise<void>;
 };
 
+const DUNGEON_GENERATING_TTL_SECONDS = () =>
+  Math.ceil(dungeonActionLockTimeoutMs() / 1000);
+
+function dungeonGeneratingKey(cultivatorId: string) {
+  return `dungeon:generating:${cultivatorId}`;
+}
+
+/** 只有会触发 LLM 长耗时推演的命令才需要标记，战斗/退出等短命令不打扰读取。 */
+function usesLlmGeneration(command: DungeonCommand): boolean {
+  if (command.kind === 'start' || command.kind === 'action') return true;
+  if (command.kind === 'recover')
+    return command.action !== 'safe_retreat' && command.action !== 'force_quit';
+  return false;
+}
+
 export class DungeonApplicationService {
   constructor(
     private readonly flow: DungeonFlowService,
     private readonly commands: PlayerCommandExecutor,
-    private readonly cache: Pick<Redis, 'get' | 'set'>,
+    private readonly cache: Pick<Redis, 'get' | 'set' | 'del'>,
     private readonly withLock: typeof withRedisLock,
   ) {}
   /** A synchronized read cannot report an old round while a command is still generating. */
@@ -79,6 +94,35 @@ export class DungeonApplicationService {
     // 状态读取是 Postgres 单行 + Redis 快照，原子且安全；
     // 动作执行中读到的是动作前快照，属于合法状态。
     return this.flow.getState(cultivatorId, runId);
+  }
+
+  /** LLM 推演中的标记：state 读取据此提示"场景生成中"，前端可自动轮询。 */
+  async readDungeonGenerating(cultivatorId: string): Promise<boolean> {
+    try {
+      return Boolean(await this.cache.get(dungeonGeneratingKey(cultivatorId)));
+    } catch {
+      return false;
+    }
+  }
+
+  private async setGeneratingMarker(
+    cultivatorId: string,
+    present: boolean,
+  ): Promise<void> {
+    try {
+      if (present) {
+        await this.cache.set(
+          dungeonGeneratingKey(cultivatorId),
+          new Date().toISOString(),
+          'EX',
+          DUNGEON_GENERATING_TTL_SECONDS(),
+        );
+      } else {
+        await this.cache.del(dungeonGeneratingKey(cultivatorId));
+      }
+    } catch {
+      // 标记是体验优化，Redis 异常时不阻断副本命令本身
+    }
   }
 
   async executeDungeonCommand(args: {
@@ -118,34 +162,45 @@ export class DungeonApplicationService {
             mapNodeId: args.command.mapNodeId,
           });
         }
-        const prepared = await prepareDungeonCommand(
-          this.flow,
-          args.cultivatorId,
-          args.command,
-          lease,
-        );
-        lease.assertHeld();
-        const hooks = asDeferredResult(prepared);
-        const persist = hooks?.persist;
-        const afterCommit = hooks?.afterCommit;
-        const result = hooks ? stripDungeonHooks(hooks) : prepared;
-        const committed = await this.commands.execute({
-          coordination: { mode: 'redis', lease },
-          userId: args.userId,
-          cultivatorId: args.cultivatorId,
-          source,
-          requestId,
-          allowEmpty: true,
-          command: (tx) =>
-            executeDungeonPersistenceCommand({
-              cultivatorId: args.cultivatorId,
-              result,
-              persist,
-              tx,
-            }),
-        });
-        if (afterCommit) await afterCommit();
-        return toPlayerStateMutationResponse(committed);
+        // 长耗时 LLM 推演前先打"生成中"标记：请求中途断连（tunnel/客户端超时）
+        // 时前端仍可据此展示推演中界面并自动轮询，而不是回到地图页允许重复点击。
+        if (usesLlmGeneration(args.command)) {
+          await this.setGeneratingMarker(args.cultivatorId, true);
+        }
+        try {
+          const prepared = await prepareDungeonCommand(
+            this.flow,
+            args.cultivatorId,
+            args.command,
+            lease,
+          );
+          lease.assertHeld();
+          const hooks = asDeferredResult(prepared);
+          const persist = hooks?.persist;
+          const afterCommit = hooks?.afterCommit;
+          const result = hooks ? stripDungeonHooks(hooks) : prepared;
+          const committed = await this.commands.execute({
+            coordination: { mode: 'redis', lease },
+            userId: args.userId,
+            cultivatorId: args.cultivatorId,
+            source,
+            requestId,
+            allowEmpty: true,
+            command: (tx) =>
+              executeDungeonPersistenceCommand({
+                cultivatorId: args.cultivatorId,
+                result,
+                persist,
+                tx,
+              }),
+          });
+          if (afterCommit) await afterCommit();
+          return toPlayerStateMutationResponse(committed);
+        } finally {
+          if (usesLlmGeneration(args.command)) {
+            await this.setGeneratingMarker(args.cultivatorId, false);
+          }
+        }
       },
     );
     if (cacheKey) {
