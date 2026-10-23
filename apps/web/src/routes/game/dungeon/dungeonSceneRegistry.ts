@@ -21,7 +21,8 @@ export type DungeonSceneState =
   | 'battle_preparation'
   | 'in_battle'
   | 'looting'
-  | 'settlement';
+  | 'settlement'
+  | 'generating';
 
 const dungeonSceneDescriptors: Record<
   DungeonSceneState,
@@ -106,6 +107,16 @@ const dungeonSceneDescriptors: Record<
     },
     density: 'wide',
     loadingMessage: '正在清点机缘……',
+  },
+  generating: {
+    sceneLabel: '云游探秘',
+    subtitle: '天机推演中，道果渐显，请勿再次施法。',
+    backAction: {
+      label: '返回洞府',
+      href: '/game',
+    },
+    density: 'centered',
+    loadingMessage: '天机推演中，请稍候……',
   },
 };
 
