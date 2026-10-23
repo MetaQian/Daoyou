@@ -10,6 +10,7 @@ import type { MaterialSkeleton } from '@daoyou/game-domain/materials/generation'
 import { type CreateItemLibraryEntry, type ItemLibraryMaterialGenerateInput, type ItemLibrarySpiritSeedGenerateInput } from '@daoyou/contracts/items/library';
 import { ItemLibraryEntrySchema, type ItemLibraryEntry } from '@daoyou/game-domain/items/catalog';
 import { QUALITY_ORDER, type Quality } from '@daoyou/constants/qualities';
+import { SECT_REALM_QUALITY_RULES } from '@daoyou/game-rules/sect-organization';
 import { type MaterialType } from '@daoyou/game-domain/inventory';
 import type { Material } from '@daoyou/game-domain/character';
 import { and, asc, eq, gte, inArray, sql } from 'drizzle-orm';
@@ -423,6 +424,67 @@ export async function generateRandomMaterialLibraryEntries(input: {
     .values(values)
     .returning();
   return rows.map(parseRow);
+}
+
+/**
+ * 灵矿采掘结算要求：SECT_REALM_QUALITY_RULES 覆盖的每个品质等级，
+ * 道具库里都必须有足量已上架灵矿。每日市场计划只产真品及以上灵矿，
+ * 凡品/灵品/玄品长期为 0，导致低境界采掘任务 start 直接 503。
+ * 这里按品质兜底补货，种子含时间戳保证多次补货的 itemId 不冲突。
+ */
+const MINING_ORE_MIN_STOCK = 8;
+
+export async function ensureMiningOreStock(input: {
+  userId: string;
+}): Promise<{ checked: Quality[]; filled: Quality[]; inserted: number }> {
+  const q = getExecutor();
+  const targetQualities = Array.from(
+    new Set(
+      Object.values(SECT_REALM_QUALITY_RULES)
+        .map((rule) => Object.keys(rule.weights) as Quality[])
+        .flat(),
+    ),
+  ).sort((left, right) => QUALITY_ORDER[left] - QUALITY_ORDER[right]);
+
+  const rows = await q
+    .select({ quality: itemLibrary.quality, total: sql<number>`count(*)` })
+    .from(itemLibrary)
+    .where(
+      and(
+        eq(itemLibrary.type, 'material'),
+        eq(itemLibrary.status, 'published'),
+        eq(itemLibrary.category, 'ore'),
+        inArray(
+          itemLibrary.quality,
+          targetQualities,
+        ),
+      ),
+    )
+    .groupBy(itemLibrary.quality);
+  const stock = new Map(rows.map((row) => [row.quality, row.total]));
+
+  const filled: Quality[] = [];
+  let inserted = 0;
+  for (const quality of targetQualities) {
+    const missing = MINING_ORE_MIN_STOCK - (stock.get(quality) ?? 0);
+    if (missing <= 0) continue;
+    const entries = await generateMaterialLibraryEntries({
+      request: {
+        count: missing,
+        materialType: 'ore',
+        quality,
+        status: 'published',
+        seed: `mining_ore_stock:${quality}:${new Date().toISOString()}`,
+      },
+      userId: input.userId,
+      ignoreItemIdConflicts: true,
+    });
+    if (entries.length > 0) {
+      filled.push(quality);
+      inserted += entries.length;
+    }
+  }
+  return { checked: targetQualities, filled, inserted };
 }
 
 export async function generateDailyMarketMaterialLibraryEntries(input: {
