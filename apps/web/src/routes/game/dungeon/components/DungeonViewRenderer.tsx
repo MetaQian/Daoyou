@@ -233,6 +233,20 @@ export function DungeonViewRenderer({
     );
   }
 
+  if (viewState.type === 'generating') {
+    const descriptor = resolveDungeonSceneDescriptor('generating');
+
+    return (
+      <DungeonSceneScreen descriptor={descriptor}>
+        <GameSceneLoading message={descriptor.loadingMessage} />
+        <p className="text-ink-secondary mx-auto mt-4 max-w-md text-center text-sm leading-7">
+          秘境推演由天机演算，耗时较长。结果落地前请勿重复施法，页面会自动刷新，
+          也可稍后重新进入秘境查看进度。
+        </p>
+      </DungeonSceneScreen>
+    );
+  }
+
   if (viewState.type === 'battle_preparation' && viewState.state.encounter) {
     return (
       <DungeonSceneScreen
