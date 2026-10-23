@@ -45,6 +45,10 @@ export class InternalCronController {
   materialLibraryGeneration() {
     return this.jobs.materialLibraryGeneration();
   }
+  @Get('mining-ore-stock-backfill')
+  miningOreStockBackfill() {
+    return this.jobs.miningOreStockBackfill();
+  }
   @Get('sponsorship-reconcile')
   sponsorshipReconcile() {
     return this.jobs.sponsorshipReconcile();
