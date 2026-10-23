@@ -43,6 +43,13 @@ export class RuntimeService
       this.training,
       createBackgroundCommandHandlers(this.jobs),
     );
+    // 灵矿存量兜底补偿：部署后首次启动即可补齐低品质灵矿缺口，
+    // 不阻塞启动；失败不影响后续定时任务（每日 job 会再次补偿）。
+    void this.jobs
+      .miningOreStockBackfill()
+      .catch((error) => {
+        console.error('[runtime] mining ore stock backfill failed:', error);
+      });
     this.cron.start();
   }
 
